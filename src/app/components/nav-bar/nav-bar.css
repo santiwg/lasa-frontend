@@ -1,0 +1,43 @@
+/* Navbar wrapper */
+.navbar {
+  background-color: #f7f6f7;
+  border-bottom: 1px solid #e5e5e5;
+  min-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Ensure nav items lay out horizontally and don't wrap prematurely */
+.navbar-nav {
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+/* Links: smaller and thinner by default */
+.nav-link {
+  position: relative;
+  color: #333;
+  padding: 0.6rem 0.6rem;
+  display: inline-block;
+  z-index: 1;
+  font-size: 0.85rem;
+  font-weight: 400;
+  border-radius: 0.375rem; /* smooth corners for active background */
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Active: bold with grey pill background */
+.nav-link.active {
+  color: #333;
+  font-weight: 700 !important;
+  background-color: #d9d9d9; /* light grey like screenshot */
+}
+
+/* Remove any pseudo underline/overlay */
+.nav-link::before,
+.nav-link.active::before {
+  content: none !important;
+}

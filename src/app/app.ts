@@ -8,5 +8,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('lasa-frontend');
+  protected readonly title = 'lasa-frontend';
 }
