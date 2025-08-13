@@ -1,0 +1,58 @@
+/* Use global design tokens declared in styles.css */
+.d-flex[role='group'] button.btn.btn-sm.btn-outline-secondary {
+  border-color: var(--color-accent-primary);
+  color: var(--color-accent-primary);
+}
+
+.d-flex[role='group'] button.btn.btn-sm.btn-outline-secondary:hover:not([disabled]) {
+  background-color: var(--color-accent-primary);
+  color: var(--color-accent-on-primary);
+}
+
+.d-flex[role='group'] span.small {
+  background-color: var(--color-accent-primary);
+  color: var(--color-accent-on-primary);
+  padding: 0.15rem 0.55rem;
+  border-radius: 0.4rem;
+  line-height: 1.1;
+  font-weight: 600;
+}
+
+/* Rounded pagination buttons */
+.pagination-inline .pag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 12px;
+  border: 1px solid var(--color-border-subtle, #d0d0d0);
+  background: #fff;
+  color: var(--color-text-primary, #333);
+  user-select: none;
+  transition: background-color .15s, color .15s, border-color .15s;
+}
+
+.pagination-inline .pag-btn.nav-btn:hover:not([disabled]) {
+  background: var(--color-accent-primary);
+  color: var(--color-accent-on-primary);
+  border-color: var(--color-accent-primary);
+  cursor: pointer;
+}
+
+.pagination-inline .pag-btn.nav-btn:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.pagination-inline .current-page {
+  background: var(--color-accent-primary);
+  color: var(--color-accent-on-primary);
+  border-color: var(--color-accent-primary);
+  cursor: default;
+  pointer-events: none;
+}

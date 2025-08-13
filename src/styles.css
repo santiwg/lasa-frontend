@@ -13,3 +13,13 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* Brand / design tokens */
+:root {
+  --color-surface-background: #f7f6f7; /* light neutral surface (navbar, table headers) */
+  --color-accent-primary: #fabb65;      /* primary accent (buttons, highlights, pagination) */
+  --color-accent-on-primary: #ffffff;   /* text/icon color on primary accent */
+  --color-text-primary: #333333;        /* main text color */
+  --color-border-subtle: #e5e5e5;       /* subtle borders */
+  --color-header: #545454;              /* headings */
+}

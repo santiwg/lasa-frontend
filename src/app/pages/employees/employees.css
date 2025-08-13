@@ -1,3 +1,47 @@
-h2{
-    color: #545454;
+/* Employees Page Layout */
+.employees-page {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
 }
+
+/* Heading color */
+.employees-page h2 { color: var(--color-header); }
+
+/* Table styles (moved wrapper styles onto table) */
+.employees-table {
+  font-size: 0.8rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 14px;
+  overflow: hidden; /* keep radius clipped */
+  background: transparent;
+  /* padding on table element is ignored for cell content; use th/td padding instead */
+}
+.employees-table thead th { background-color: var(--color-surface-background); font-weight: 700; }
+.employees-table tbody td, .employees-table tbody th { font-weight: 400; }
+/* Add custom cell padding overriding .table-sm */
+.employees-table th, .employees-table td { vertical-align: middle; padding: 0.45rem 0.75rem; }
+
+/* Column widths via colgroup classes (balanced for typical content) */
+.col-id { width: 4%; }
+.col-nombre { width: 9%; }
+.col-apellido { width: 9%; }
+.col-email { width: 20%; }
+.col-telefono { width: 9%; }
+.col-rol { width: 9%; }
+.col-activo { width: 5%; }
+.col-salario { width: 8%; }
+.col-cuit { width: 9%; }
+.col-cuil { width: 8%; }
+.col-acciones { width: 10%; }
+
+/* Accent buttons pill style */
+.btn-accent {
+  background-color: var(--color-accent-primary) !important;
+  border-color: var(--color-accent-primary) !important;
+  color: var(--color-accent-on-primary) !important;
+  border-radius: 999px;
+}
+.btn-accent:hover { filter: brightness(0.9); }
+
+/* Pagination container */
+.actions-pagination-row { margin-top: 1.25rem; }

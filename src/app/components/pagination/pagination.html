@@ -1,5 +1,5 @@
-<div class="d-flex justify-content-center align-items-center gap-2 mt-3" role="group" aria-label="Controles de paginación">
-  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="previous.emit()" [disabled]="page === 1">&laquo;</button>
-  <span class="small px-2">{{ page }}</span>
-  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="next.emit()" [disabled]="!hasNext">&raquo;</button>
+<div class="pagination-inline d-flex justify-content-center align-items-center gap-3 mt-3" role="group" aria-label="Controles de paginación">
+  <button type="button" class="pag-btn nav-btn" (click)="previous.emit()" [disabled]="page === 1" aria-label="Página anterior">&lt;</button>
+  <span class="pag-btn current-page" aria-live="polite">{{ page }}</span>
+  <button type="button" class="pag-btn nav-btn" (click)="next.emit()" [disabled]="!hasNext" aria-label="Página siguiente">&gt;</button>
 </div>
