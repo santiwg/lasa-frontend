@@ -1,9 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Employee, EmployeeCreate, EmployeeUpdate } from '../../interfaces/employee.interface';
+import { Employee, EmployeeDto } from '../../interfaces/employee.interface';
 import { EmployeeRole } from '../../interfaces/employee-role.interface';
 import { ValidatorFn, AbstractControl } from '@angular/forms';
+import { AlertService } from '../../services/alert.service';
+import { GlobalStatusService } from '../../services/global-status-service';
+import { EmployeeRoleService, EmployeeService } from '../../services';
 
 @Component({
   selector: 'app-employee-form',
@@ -24,7 +27,7 @@ export class EmployeeForm implements OnChanges, OnInit {
 
   get isEdit(): boolean { return !!this.employee; }
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private alert: AlertService, private globalStatusService: GlobalStatusService, private readonly employeeService: EmployeeService, private readonly employeeRolesService: EmployeeRoleService) {
     this.form = this.fb.group({
       name: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -88,15 +91,17 @@ export class EmployeeForm implements OnChanges, OnInit {
     }
   }
 
-  submit(): void {
+  async submit() {
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
+      this.form.markAllAsTouched(); //trigger validation messages for all form fields at once
       return;
     }
+
+    const confirmed = await this.alert.confirm();
+    if (!confirmed) return;
     const v = this.form.value;
     if (this.isEdit && this.employee) {
-      const payload: EmployeeUpdate = {
-        id: this.employee.id,
+      const payload: EmployeeDto = {
         name: v.name!,
         lastName: v.lastName!,
         email: v.email!,
@@ -107,9 +112,9 @@ export class EmployeeForm implements OnChanges, OnInit {
         cuit: v.cuit || undefined,
         cuil: v.cuil || undefined
       };
-      this.updateEmployee(payload);
+      this.updateEmployee(payload, this.employee.id!);
     } else {
-      const payload: EmployeeCreate = {
+      const payload: EmployeeDto = {
         name: v.name!,
         lastName: v.lastName!,
         email: v.email!,
@@ -123,24 +128,51 @@ export class EmployeeForm implements OnChanges, OnInit {
       this.createEmployee(payload);
     }
   }
-  updateEmployee(payload: EmployeeUpdate): void {
+
+  async updateEmployee(payload: EmployeeDto, id: number): Promise<void> {
     // This method is used to update an existing employee
-    
-    //EMIT the update event with the payload
-    //this.update.emit(payload);
-    //CORREGIR TIPO DE RETORNO
+    this.globalStatusService.setLoading(true);
+    const response = await this.employeeService.updateEmployee(payload, id);
+    this.globalStatusService.setLoading(false);
+    if (response.success) {
+      this.alert.success('¡Empleado actualizado!');
+      this.update.emit(response.data);
+    } else {
+      this.alert.error(`Surgió un problema editando al empleado.\n ${response.error}`);
+    }
+    this.onCancel(); // close the modal after update
   }
-  createEmployee(payload: EmployeeCreate): void {
-    // This method is used to create a new employee
-    //EMIT the create event with the payload
-    //this.create.emit(payload);
-    //CORREGIR TIPO DE RETORNO
+  async createEmployee(payload: EmployeeDto): Promise<void> {
+    this.globalStatusService.setLoading(true);
+    const response = await this.employeeService.createEmployee(payload);
+    this.globalStatusService.setLoading(false);
+    if (response.success) {
+      this.alert.success('¡Empleado creado!');
+      this.create.emit(response.data);
+    } else {
+      this.alert.error(`Surgió un problema creando al empleado.\n ${response.error}`);
+    }
+    this.onCancel(); // close the modal after creation
   }
 
   onCancel(): void {
     this.cancel.emit();
   }
   ngOnInit() {
-    //load employee roles from a service or API
+    this.getEmployeeRoles()
+  }
+  getEmployeeRoles(): void {
+    this.globalStatusService.setLoading(true);
+    this.employeeRolesService.getEmployeeRoles().then(response => {
+      if (response.success) {
+        this.roles = response.data;
+      } else {
+        this.alert.error(`Error al obtener los roles de empleados: ${response.error}`);
+        //since I'm not using "await", the next actions happen right away
+        this.onCancel(); // close the modal if roles cannot be loaded
+      }
+      this.globalStatusService.setLoading(false);
+    });
+    
   }
 }

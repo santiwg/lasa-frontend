@@ -46,8 +46,10 @@
             <td>{{ e.cuit || '-' }}</td>
             <td>{{ e.cuil || '-' }}</td>
             <td class="text-end">
-              <button class="btn btn-sm btn-outline-secondary me-1" (click)="openEmployeeEditModal(e)">Editar</button>
-              <button class="btn btn-sm btn-outline-danger">Eliminar</button>
+              <div class="d-inline-flex gap-1">
+                <button class="btn btn-sm btn-accent rounded-3" (click)="openEmployeeEditModal(e)">Editar</button>
+                <button class="btn btn-sm btn-danger rounded-3">Eliminar</button>
+              </div>
             </td>
           </tr>
         }
@@ -59,14 +61,14 @@
     <div>
       <button class="btn btn-accent btn-sm" (click)="openEmployeeCreateModal()">+ Registrar nuevo empleado</button>
     </div>
-    <div class="flex-grow-1 d-flex justify-content-center">
+    <!--<div class="flex-grow-1 d-flex justify-content-center">
       <app-pagination
         [page]="page"
         [hasNext]="hasNext"
         (previous)="previousPage()"
         (next)="nextPage()">
       </app-pagination>
-    </div>
+    </div>-->
     <div class="text-md-end">
       <button class="btn btn-accent btn-sm" (click)="showCreateEmployeeRoleModal = true">+ Registrar nuevo rol</button>
     </div>
@@ -83,21 +85,8 @@
   </app-employee-form>
 }
 
-<!-- Modal Crear Rol -->
-<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="showCreateEmployeeRoleModal" style="background-color: rgba(0,0,0,.5);">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Crear rol</h5>
-        <button type="button" class="btn-close" (click)="showCreateEmployeeRoleModal = false"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Formulario creación rol -->
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="showCreateEmployeeRoleModal = false">Cancelar</button>
-        <button class="btn btn-primary">Guardar</button>
-      </div>
-    </div>
-  </div>
-</div>
+@if (showCreateEmployeeRoleModal) {
+  <app-employee-role-form
+    (cancel)="showCreateEmployeeRoleModal = false">
+  </app-employee-role-form>
+}

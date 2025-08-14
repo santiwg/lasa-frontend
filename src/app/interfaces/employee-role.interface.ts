@@ -3,3 +3,7 @@ export interface EmployeeRole {
   name: string;
   description?: string;
 }
+export interface EmployeeRoleDto {
+  name: string;
+  description?: string;
+}
