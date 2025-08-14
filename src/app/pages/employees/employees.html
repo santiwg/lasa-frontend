@@ -46,7 +46,7 @@
             <td>{{ e.cuit || '-' }}</td>
             <td>{{ e.cuil || '-' }}</td>
             <td class="text-end">
-              <button class="btn btn-sm btn-outline-secondary me-1" (click)="showEditEmployeeModal = true">Editar</button>
+              <button class="btn btn-sm btn-outline-secondary me-1" (click)="openEmployeeEditModal(e)">Editar</button>
               <button class="btn btn-sm btn-outline-danger">Eliminar</button>
             </td>
           </tr>
@@ -57,7 +57,7 @@
 
   <div class="d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between mt-3 gap-3 actions-pagination-row">
     <div>
-      <button class="btn btn-accent btn-sm" (click)="showCreateEmployeeModal = true">+ Registrar nuevo empleado</button>
+      <button class="btn btn-accent btn-sm" (click)="openEmployeeCreateModal()">+ Registrar nuevo empleado</button>
     </div>
     <div class="flex-grow-1 d-flex justify-content-center">
       <app-pagination
@@ -73,43 +73,15 @@
   </div>
 </div>
 
-<!-- Modal Crear Empleado -->
-<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="showCreateEmployeeModal" style="background-color: rgba(0,0,0,.5);">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Crear empleado</h5>
-        <button type="button" class="btn-close" (click)="showCreateEmployeeModal = false"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Formulario creación empleado -->
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="showCreateEmployeeModal = false">Cancelar</button>
-        <button class="btn btn-primary">Guardar</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Editar Empleado -->
-<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="showEditEmployeeModal" style="background-color: rgba(0,0,0,.5);">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Editar empleado</h5>
-        <button type="button" class="btn-close" (click)="showEditEmployeeModal = false"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Formulario edición empleado -->
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="showEditEmployeeModal = false">Cancelar</button>
-        <button class="btn btn-primary">Guardar</button>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Modal Crear/Editar Empleado -->
+@if (showEmployeeModal) {
+  <app-employee-form
+    [employee]="selectedEmployee"
+    (create)="onCreateEmployee($event)"
+    (update)="onUpdateEmployee($event)"
+    (cancel)="showEmployeeModal = false">
+  </app-employee-form>
+}
 
 <!-- Modal Crear Rol -->
 <div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="showCreateEmployeeRoleModal" style="background-color: rgba(0,0,0,.5);">
