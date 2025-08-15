@@ -48,11 +48,14 @@ export class EmployeeForm implements OnChanges, OnInit {
   //if neither is provided, the form will be invalid
   static cuitCuilRequiredValidator(): ValidatorFn {
     return (group: AbstractControl) => {
+      //retrieve the values
       const cuit = group.get('cuit')?.value;
       const cuil = group.get('cuil')?.value;
+
+      //store references to the actual form controls,to check not only the values but also the interaction state of each control.
       const cuitCtrl = group.get('cuit');
       const cuilCtrl = group.get('cuil');
-      if ((!cuit || cuitCtrl?.untouched) && (!cuil || cuilCtrl?.untouched)) {
+      if (!cuit && !cuil && (cuitCtrl?.touched || cuilCtrl?.touched)) {
         return { cuitCuilRequired: true }; //returns an error
       }
       return null; // no error
