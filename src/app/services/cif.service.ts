@@ -12,7 +12,7 @@ export class CifService {
 
   constructor() {}
 
-    async getCifsData(): Promise<{
+    async getCifsData(page:number,quantity:number): Promise<{
       success: true; data: {
         paginatedCifs: PaginatedData<Cif>,
         currentMonthTotal: number,
@@ -20,7 +20,7 @@ export class CifService {
       }
     } | { success: false; error: string }> {
       try {
-        const response = await axiosClient.get(`${this.baseUrl}/summary`);
+        const response = await axiosClient.get(`${this.baseUrl}/summary?page=${page}&quantity=${quantity}`);
         return { success: true, data: response.data };
       } catch (error: any) {
         const message =
@@ -31,13 +31,13 @@ export class CifService {
       }
     }
   
-    async createCif(cif:CifDto,page:number,quantity:number): Promise<{
+    async createCif(cif:CifDto): Promise<{
       success: true; data: Cif
     } | { success: false; error: string }
     > {
       try {
         const response = await axiosClient.post(
-          `${this.baseUrl}?page=${page}&quantity=${quantity}`,
+          `${this.baseUrl}`,
           cif
         );
   

@@ -1,75 +1,75 @@
 import { Routes } from '@angular/router';
-import { TemplateComponent } from './pages/template/template';
-import { Home } from './pages/home/home';
-import { Sales } from './pages/sales/sales';
-import { Purchases } from './pages/purchases/purchases';
-import { Collections } from './pages/collections/collections';
-import { Payments } from './pages/payments/payments';
-import { Suppliers } from './pages/suppliers/suppliers';
-import { Customers } from './pages/customers/customers';
-import { Production } from './pages/production/production';
-import { Supplies } from './pages/supplies/supplies';
-import { Products } from './pages/products/products';
-import { Employees } from './pages/employees/employees';
-import { CashFlow } from './pages/cash-flow/cash-flow';
-import { Cif } from './pages/cif/cif';
+import { TemplatePage } from './pages/template/template-page';
+import { HomePage } from './pages/home/home-page';
+import { SalesPage } from './pages/sales/sales-page';
+import { PurchasesPage } from './pages/purchases/purchases-page';
+import { CollectionsPage } from './pages/collections/collections-page';
+import { PaymentsPage } from './pages/payments/payments-page';
+import { SuppliersPage } from './pages/suppliers/suppliers-page';
+import { CustomersPage } from './pages/customers/customers-page';
+import { ProductionPage } from './pages/production/production-page';
+import { SuppliesPage } from './pages/supplies/supplies-page';
+import { ProductsPage } from './pages/products/products-page';
+import { EmployeesPage } from './pages/employees/employees-page';
+import { CashFlowPage } from './pages/cash-flow/cash-flow-page';
+import { CifPage } from './pages/cif/cif-page';
 
 export const routes: Routes = [
   {
     path: '',
-    component: TemplateComponent,
+  component: TemplatePage,
     children: [
       {
         path: '',
-        component: Home,
+  component: HomePage,
       },
       {
         path: 'sales',
-        component: Sales
+  component: SalesPage
       },
       {
         path: 'purchases',
-        component: Purchases
+  component: PurchasesPage
       },
       {
         path: 'collections',
-        component: Collections
+  component: CollectionsPage
       },
       {
         path: 'payments',
-        component: Payments
+  component: PaymentsPage
       },
       {
         path: 'suppliers',
-        component: Suppliers
+  component: SuppliersPage
       },
       {
         path: 'customers',
-        component: Customers
+  component: CustomersPage
       },
       {
         path: 'production',
-        component: Production
+  component: ProductionPage
       },
       {
         path: 'supplies',
-        component: Supplies
+  component: SuppliesPage
       },
       {
         path: 'products',
-        component: Products
+  component: ProductsPage
       },
       {
         path: 'employees',
-        component: Employees
+  component: EmployeesPage
       },
       {
         path: 'cash-flow',
-        component: CashFlow
+  component: CashFlowPage
       },
       {
         path: 'cif',
-        component: Cif
+  component: CifPage
       }
     ],
   },

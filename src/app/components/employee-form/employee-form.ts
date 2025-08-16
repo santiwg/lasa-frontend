@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Employee, EmployeeDto } from '../../interfaces/employee.interface';
 import { EmployeeRole } from '../../interfaces/employee-role.interface';
@@ -15,7 +15,7 @@ import { EmployeeRoleService, EmployeeService } from '../../services';
   templateUrl: './employee-form.html',
   styleUrls: ['./employee-form.css']
 })
-export class EmployeeForm implements OnChanges, OnInit {
+export class EmployeeForm implements OnInit {
   @Input() employee: Employee | null = null; // if provided -> edit mode, if not provided -> create mode
   roles: EmployeeRole[] = [];
 
@@ -62,35 +62,20 @@ export class EmployeeForm implements OnChanges, OnInit {
     };
   }
 
-  //inicializar o actualizar el formulario cada vez que cambie el empleado a editar.
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('employee' in changes) {
-      const e = this.employee;
-      if (e) {
-        this.form.patchValue({
-          name: e.name,
-          lastName: e.lastName,
-          email: e.email,
-          phoneNumber: e.phoneNumber,
-          roleId: e.role?.id ?? null,
-          hourlyWage: e.hourlyWage,
-          isActive: e.isActive,
-          cuit: e.cuit ?? '',
-          cuil: e.cuil ?? ''
-        });
-      } else {
-        this.form.reset({
-          name: '',
-          lastName: '',
-          email: '',
-          phoneNumber: '',
-          roleId: null,
-          hourlyWage: 0,
-          isActive: true,
-          cuit: '',
-          cuil: ''
-        });
-      }
+  ngOnInit() {
+    this.getEmployeeRoles();
+    if (this.employee) {
+      this.form.patchValue({
+        name: this.employee.name,
+        lastName: this.employee.lastName,
+        email: this.employee.email,
+        phoneNumber: this.employee.phoneNumber,
+        roleId: this.employee.role?.id ?? null,
+        hourlyWage: this.employee.hourlyWage,
+        isActive: this.employee.isActive,
+        cuit: this.employee.cuit ?? '',
+        cuil: this.employee.cuil ?? ''
+      });
     }
   }
 
@@ -99,36 +84,24 @@ export class EmployeeForm implements OnChanges, OnInit {
       this.form.markAllAsTouched(); //trigger validation messages for all form fields at once
       return;
     }
-
     const confirmed = await this.alert.confirm();
     if (!confirmed) return;
     const v = this.form.value;
+    const payload: EmployeeDto = {
+      name: v.name!,
+      lastName: v.lastName!,
+      email: v.email!,
+      phoneNumber: v.phoneNumber || '',
+      roleId: v.roleId!,
+      hourlyWage: Number(v.hourlyWage!),
+      isActive: !!v.isActive,
+      cuit: v.cuit || undefined,
+      cuil: v.cuil || undefined
+    };
     if (this.isEdit && this.employee) {
-      const payload: EmployeeDto = {
-        name: v.name!,
-        lastName: v.lastName!,
-        email: v.email!,
-        phoneNumber: v.phoneNumber || '',
-        roleId: v.roleId!,
-        hourlyWage: Number(v.hourlyWage!),
-        isActive: !!v.isActive,
-        cuit: v.cuit || undefined,
-        cuil: v.cuil || undefined
-      };
-      this.updateEmployee(payload, this.employee.id!);
+      await this.updateEmployee(payload, this.employee.id!);
     } else {
-      const payload: EmployeeDto = {
-        name: v.name!,
-        lastName: v.lastName!,
-        email: v.email!,
-        phoneNumber: v.phoneNumber || '',
-        roleId: v.roleId!,
-        hourlyWage: Number(v.hourlyWage!),
-        isActive: !!v.isActive,
-        cuit: v.cuit || undefined,
-        cuil: v.cuil || undefined
-      };
-      this.createEmployee(payload);
+      await this.createEmployee(payload);
     }
   }
 
@@ -160,9 +133,6 @@ export class EmployeeForm implements OnChanges, OnInit {
 
   onCancel(): void {
     this.cancel.emit();
-  }
-  ngOnInit() {
-    this.getEmployeeRoles()
   }
   getEmployeeRoles(): void {
     this.globalStatusService.setLoading(true);

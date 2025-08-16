@@ -1,0 +1,66 @@
+
+/* Página de CIFs */
+.cifs-page {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  margin-top: 3rem;
+}
+
+.cifs-table {
+  width: 100%;
+  max-width: 1100px;
+  min-width: 900px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 14px;
+  overflow: hidden;
+  background: transparent;
+}
+.cifs-table thead th { background-color: var(--color-surface-background); font-weight: 700; }
+.cifs-table tbody td, .cifs-table tbody th { font-weight: 400; }
+.cifs-table th, .cifs-table td { vertical-align: middle; padding: 0.5rem 0.75rem; }
+
+/* Espacio para botones de acción en la columna Acciones */
+.cifs-table .col-acciones {
+  padding-right: 1rem;
+}
+
+.cifs-table td .d-inline-flex, .cifs-table td .d-flex {
+  gap: 0.5rem;
+}
+
+.cifs-table .col-id { width: 5%; }
+.cifs-table .col-costtype { width: 18%; }
+.cifs-table .col-date { width: 18%; }
+.cifs-table .col-quantity { width: 10%; }
+.cifs-table .col-unit { width: 15%; }
+.cifs-table .col-unitprice { width: 15%; }
+.cifs-table .col-acciones { width: 19%; }
+
+.actions-pagination-row {
+  margin-top: 1.25rem;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  max-width: 1100px;
+  min-width: 900px;
+  width: 100%;
+}
+
+.btn-accent {
+  background-color: var(--color-accent-primary) !important;
+  border-color: var(--color-accent-primary) !important;
+  color: var(--color-accent-on-primary) !important;
+  border-radius: 999px;
+}
+.btn-accent:hover { filter: brightness(0.9); }
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+}
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

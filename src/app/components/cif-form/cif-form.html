@@ -1,0 +1,82 @@
+<p>cif-form works!</p>
+<div class="modal-backdrop fade show"></div>
+<div class="modal fade show" tabindex="-1" role="dialog" style="display:block; position: fixed; inset: 0; z-index: 1050;">
+  <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+    <div class="modal-content employee-modal rounded-5">
+      <!-- Header -->
+      <div class="modal-header modal-accent rounded-top-5 align-items-center" style="border-bottom-left-radius: 0; border-bottom-right-radius: 0;">
+        <button type="button" class="btn-close btn-close-white me-auto" (click)="onCancel()" aria-label="Close"></button>
+        <h3 class="modal-title text-center fw-bold text-white w-100 m-0">
+          Registrar Cif
+        </h3>
+        <div class="ms-auto" style="width:24px;"></div>
+      </div>
+      <!-- Body -->
+      <div class="modal-body px-5 pb-4 pt-4">
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label fw-semibold">Tipo Costo</label>
+              <select class="form-select py-2 rounded-3" formControlName="costTypeId">
+                <option [ngValue]="null" disabled>Seleccionar…</option>
+                @for (ct of costTypes; track ct.id) {
+                  <option [ngValue]="ct.id">{{ ct.name }}</option>
+                }
+              </select>
+              @if (form.get('costTypeId')?.invalid && form.get('costTypeId')?.touched) {
+                <p class="text-danger">Debe seleccionar un tipo de costo.</p>
+              }
+            </div>
+            <div class="col-6">
+              <label class="form-label fw-semibold">Fecha</label>
+                <input
+                  type="datetime-local"
+                  id="fecha"
+                  formControlName="dateTime"
+                  class="form-control py-2 rounded-3"
+                  [max]="hoyHora"
+                  placeholder="Fecha"
+                  placeholder="Fecha y hora"
+                />
+              <small class="text-muted">Si no ingresa nada se toma la fecha actual</small>
+              @if (form.get('dateTime')?.invalid && form.get('dateTime')?.touched) {
+                <p class="text-danger">Ingrese una fecha válida.</p>
+              }
+            </div>
+          </div>
+          <div class="row g-2 mb-3 align-items-end">
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-semibold">Unidad</label>
+              <select class="form-select py-2 rounded-3" formControlName="unitId">
+                <option [ngValue]="null" disabled>Seleccionar…</option>
+                @for (u of units; track u.id) {
+                  <option [ngValue]="u.id">{{ u.name }}</option>
+                }
+              </select>
+              @if (form.get('unitId')?.invalid && form.get('unitId')?.touched) {
+                <p class="text-danger">Debe seleccionar una unidad.</p>
+              }
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="form-label fw-semibold">Precio Unitario</label>
+              <input type="number" class="form-control py-2 rounded-3" formControlName="unitPrice" min="0" step="100" placeholder="Ej: 500" />
+              @if (form.get('unitPrice')?.invalid && form.get('unitPrice')?.touched) {
+                <p class="text-danger">El precio unitario debe ser mayor o igual a 0.</p>
+              }
+            </div>
+            <div class="col-6 col-md-4">
+              <label class="form-label fw-semibold">Cantidad</label>
+              <input type="number" class="form-control py-2 rounded-3" formControlName="quantity" min="1" step="1" placeholder="Ej: 100" />
+              @if (form.get('quantity')?.invalid && form.get('quantity')?.touched) {
+                <p class="text-danger">La cantidad debe ser mayor o igual a 1.</p>
+              }
+            </div>
+          </div>
+          <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-accent px-5 py-2 rounded-pill fs-5" style="background: #FAB965; color: #fff; border: none;">Registrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

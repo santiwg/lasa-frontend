@@ -1,0 +1,92 @@
+<!-- CIFs Page -->
+<div class="cifs-page mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold m-0">CIFs</h2>
+    <div class="d-flex gap-2">
+      <span class="badge rounded-pill text-bg-secondary">Total del mes anterior: {{ lastMonthTotal | currency:'ARS':'symbol':'1.2-2' }}</span>
+      <span class="badge rounded-pill text-bg-secondary">Total del mes: {{ currentMonthTotal | currency:'ARS':'symbol':'1.2-2' }}</span>
+    </div>
+  </div>
+
+  <div class="table-responsive d-flex justify-content-center">
+    <table class="table table-sm align-middle cifs-table" style="max-width: 1100px; min-width: 900px; width: 100%;">
+      <colgroup>
+        <col class="col-id" />
+        <col class="col-costtype" />
+        <col class="col-date" />
+        <col class="col-quantity" />
+        <col class="col-unit" />
+        <col class="col-unitprice" />
+        <col class="col-acciones" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Tipo de Costo</th>
+          <th scope="col">Fecha y Hora</th>
+          <th scope="col">Cantidad</th>
+          <th scope="col">Unidad</th>
+          <th scope="col">Precio Unitario</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (cif of cifs; track cif.id) {
+          <tr>
+            <th scope="row">{{ cif.id }}</th>
+            <td>{{ cif.costType.name }}</td>
+            <td>{{ cif.dateTime | date:'dd/MM/yyyy' }}</td>
+            <td>{{ cif.quantity }}</td>
+            <td>{{ cif.unit.name }}</td>
+            <td>{{ cif.unitPrice | currency:'ARS':'symbol':'1.2-2' }}</td>
+            <td>
+              <div class="d-flex justify-content-center gap-2">
+                  <button class="btn btn-sm btn-accent rounded-3" disabled>Editar</button>
+                  <button class="btn btn-sm btn-danger rounded-3" disabled>Eliminar</button>
+                  <!-- Los botones de editar y eliminar están deshabilitados porque de momento no se los usa -->
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions-pagination-row d-flex align-items-center justify-content-between mt-3 gap-3 mx-auto" style="position: relative; min-height: 48px; max-width: 1100px; min-width: 900px; width: 100%;">
+    <div>
+      <button class="btn btn-accent btn-sm" (click)="openCifCreateModal()">+ Registrar nuevo CIF</button>
+    </div>
+    <app-pagination
+      [page]="page"
+      [hasNext]="hasNext"
+      (previous)="previousPage()"
+      (next)="nextPage()"
+      style="position: absolute; left: 50%; transform: translateX(-50%) translateY(-8px);"
+    ></app-pagination>
+    <div class="d-flex gap-2">
+      <button class="btn btn-accent btn-sm" (click)="showCreateCostTypeModal = true">+ Tipo de costo</button>
+      <button class="btn btn-accent btn-sm" (click)="showCreateUnitModal = true">+ Unidad</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Crear/Editar CIF -->
+@if (showCifModal) {
+  <app-cif-form
+    (create)="onCreateCif($event)"
+    (cancel)="showCifModal = false">
+  </app-cif-form>
+}
+
+@if (showCreateCostTypeModal) {
+  <app-cost-type-form
+    (cancel)="showCreateCostTypeModal = false">
+  </app-cost-type-form>
+}
+
+@if (showCreateUnitModal) {
+  <app-unit-form
+    [unitScope]="unitScope"
+    (cancel)="showCreateUnitModal = false">
+  </app-unit-form>
+}

@@ -1,0 +1,17 @@
+.employee-modal { border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2); border-radius: 2rem; }
+.modal-accent { background-color: #FAB965; border-top-left-radius: 2rem; border-top-right-radius: 2rem; }
+.modal-accent .btn-close { filter: invert(1) grayscale(1) brightness(200%); opacity: .9; }
+
+/* Inputs */
+.form-control, .form-select { border: 1px solid var(--color-border-subtle); }
+.form-control:focus, .form-select:focus { box-shadow: 0 0 0 .2rem rgba(250,187,101,.25); border-color: #FAB965; }
+
+/* Title */
+.modal-title { line-height: 1; }
+
+/* Submit */
+.btn-accent { background: #FAB965 !important; border: none !important; color: #fff !important; font-weight: bold; border-radius: 2rem !important; font-size: 1.2rem; padding: 0.75rem 2.5rem; }
+.btn-accent:hover { filter: brightness(.95); }
+
+/* Form row alignment */
+.row.g-2.mb-3.align-items-end > [class^='col-'] { display: flex; flex-direction: column; }
