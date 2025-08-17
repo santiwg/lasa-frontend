@@ -6,7 +6,7 @@
 
 .ingredients-table {
   width: 100%;
-  max-width: 900px;
+  max-width: 1000px;
   min-width: 700px;
   margin: 0 auto;
   font-size: 0.95rem;
@@ -19,12 +19,12 @@
 .ingredients-table tbody td, .ingredients-table tbody th { font-weight: 400; }
 .ingredients-table th, .ingredients-table td { vertical-align: middle; padding: 0.5rem 0.75rem; }
 
-.col-id { width: 8%; }
-.col-name { width: 22%; }
+.col-id { width: 6%; }
+.col-name { width: 20%; }
 .col-unitprice { width: 18%; }
-.col-stock { width: 18%; }
-.col-unit { width: 18%; }
-.col-acciones { width: 16%; }
+.col-stock { width: 14%; }
+.col-unit { width: 15%; }
+.col-acciones { width: 27%; }
 
 .btn-accent {
   background-color: var(--color-accent-primary) !important;

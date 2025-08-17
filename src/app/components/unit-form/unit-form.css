@@ -1,4 +1,4 @@
-.employee-modal { border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+.unit-modal { border: none; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
 .modal-accent { background-color: var(--color-accent-primary); }
 .modal-accent .btn-close { filter: invert(1) grayscale(1) brightness(200%); opacity: .9; }
 

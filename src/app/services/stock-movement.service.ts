@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { axiosClient } from './axios-client';
 import { config } from '../config/env';
-import { StockMovement } from '../interfaces/stock-movement-interface';
+import { StockMovement, StockMovementDto } from '../interfaces/stock-movement-interface';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class StockMovementService {
       }
     }
 
-    async createStockMovement(stockMovement: StockMovement): Promise<{
+    async createStockMovement(stockMovement: StockMovementDto): Promise<{
       success: true; data: StockMovement
     } | { success: false; error: string }
     > {

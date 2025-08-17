@@ -34,9 +34,9 @@
             <td>{{ ingredient.unit.name }}</td>
             <td>
               <div class="d-flex justify-content-center gap-2">
-                <button class="btn btn-sm btn-accent rounded-3" disabled>Editar</button>
-                <button class="btn btn-sm btn-danger rounded-3" disabled>Eliminar</button>
-                <button class="btn btn-sm btn-accent rounded-3" disabled>Movimiento de stock</button>
+                <button class="btn btn-sm btn-accent rounded-3" (click)="openIngredientEditModal(ingredient)">Editar</button>
+                <button class="btn btn-sm btn-danger rounded-3" (click)="deleteIngredient(ingredient)">Eliminar</button>
+                <button class="btn btn-sm btn-accent rounded-3" (click)="openStockMovementModal(ingredient)">±Stock</button>
               </div>
             </td>
           </tr>
@@ -74,6 +74,7 @@
   <app-ingredient-form
     [ingredient]="selectedIngredient"
     (create)="onCreateIngredient($event)"
+    (update)="onUpdateIngredient($event)"
     (cancel)="showIngredientModal = false">
   </app-ingredient-form>
 }

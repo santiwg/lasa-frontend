@@ -73,6 +73,10 @@ export class IngredientsPage implements OnInit {
     this.selectedIngredient = ingredient; // object indicates edit mode
     this.showIngredientModal = true;
   }
+  openStockMovementModal(ingredient: Ingredient) {
+    this.selectedIngredient = ingredient;
+    this.showStockMovementModal = true;
+  }
 
   // Cambia a la página anterior si es posible
   previousPage() {
@@ -111,7 +115,7 @@ export class IngredientsPage implements OnInit {
   onUpdateIngredient(ingredient: Ingredient) {
       this.showIngredientModal = false;
       this.globalStatusService.setLoading(true);
-      // Buscamos el empleado viejo por el id y lo reemplazamos por el nuevo
+      // Buscamos el ingrediente viejo por el id y lo reemplazamos por el nuevo
       const index = this.ingredients.findIndex(i => i.id === ingredient.id);
       if (index !== -1) {
         this.ingredients[index] = ingredient;
@@ -123,10 +127,10 @@ export class IngredientsPage implements OnInit {
     const confirmed = await this.alertService.confirm();
     if (confirmed) {
       // Llama al servicio para eliminar el ingrediente
+      this.globalStatusService.setLoading(true);
       const response = await this.ingredientService.deleteIngredient(ingredient.id);
 
       if (response.success) {
-        await this.alertService.success('Eliminado', 'El ingrediente ha sido eliminado.');
         // Filtra el ingrediente eliminado de la lista
         this.ingredients = this.ingredients.filter(i => i.id !== ingredient.id);
 
@@ -134,14 +138,19 @@ export class IngredientsPage implements OnInit {
         if (this.ingredients.length === 0 && this.page > 1) {
           this.previousPage();
         }
+        this.globalStatusService.setLoading(false);
+        await this.alertService.success('Eliminado', 'El ingrediente ha sido eliminado.');
+        
       } else {
+        this.globalStatusService.setLoading(false);
         await this.alertService.error(`Hubo un problema eliminando el ingrediente:\n${response.error}`);
       }
     }
   }
+  //actualizamos el stock en la vista tras un stock movement
   updateSelectedIngredientStock(newStock: number) {
     if (this.selectedIngredient) {
-      this.selectedIngredient.currentStock = newStock;
+      this.selectedIngredient.currentStock += newStock;
     }
   }
 }

@@ -29,7 +29,7 @@ export class IngredientForm implements OnInit {
     this.form = this.fb.group({
       name: ['', Validators.required],
       unitId: [null, Validators.required],
-      unitPrice: [0, [Validators.required, Validators.min(0)]]
+  unitPrice: [0, [Validators.required, Validators.min(1)]]
     });
   }
 
