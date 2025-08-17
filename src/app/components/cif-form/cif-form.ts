@@ -71,6 +71,7 @@ export class CifForm implements OnInit {
       this.units = response.data;
     } else {
       await this.alert.error(`Error al obtener las unidades: ${response.error}`);
+      this.onCancel(); // close the modal if units cannot be loaded
     }
   }
 

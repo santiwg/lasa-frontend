@@ -10,6 +10,5 @@ export interface Ingredient {
 export interface IngredientDto {
     name: string;
     unitId: number;
-    currentStock: number;
     unitPrice: number;
 }

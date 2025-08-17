@@ -8,11 +8,11 @@ import { PaymentsPage } from './pages/payments/payments-page';
 import { SuppliersPage } from './pages/suppliers/suppliers-page';
 import { CustomersPage } from './pages/customers/customers-page';
 import { ProductionPage } from './pages/production/production-page';
-import { SuppliesPage } from './pages/supplies/supplies-page';
 import { ProductsPage } from './pages/products/products-page';
 import { EmployeesPage } from './pages/employees/employees-page';
 import { CashFlowPage } from './pages/cash-flow/cash-flow-page';
 import { CifPage } from './pages/cif/cif-page';
+import { IngredientsPage } from './pages/ingredients/ingredients-page';
 
 export const routes: Routes = [
   {
@@ -53,7 +53,7 @@ export const routes: Routes = [
       },
       {
         path: 'supplies',
-  component: SuppliesPage
+  component: IngredientsPage
       },
       {
         path: 'products',

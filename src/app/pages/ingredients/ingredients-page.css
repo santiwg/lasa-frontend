@@ -1,0 +1,55 @@
+/* Ingredients Page Layout */
+.ingredients-page {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+.ingredients-table {
+  width: 100%;
+  max-width: 900px;
+  min-width: 700px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 14px;
+  overflow: hidden;
+  background: transparent;
+}
+.ingredients-table thead th { background-color: var(--color-surface-background); font-weight: 700; }
+.ingredients-table tbody td, .ingredients-table tbody th { font-weight: 400; }
+.ingredients-table th, .ingredients-table td { vertical-align: middle; padding: 0.5rem 0.75rem; }
+
+.col-id { width: 8%; }
+.col-name { width: 22%; }
+.col-unitprice { width: 18%; }
+.col-stock { width: 18%; }
+.col-unit { width: 18%; }
+.col-acciones { width: 16%; }
+
+.btn-accent {
+  background-color: var(--color-accent-primary) !important;
+  border-color: var(--color-accent-primary) !important;
+  color: var(--color-accent-on-primary) !important;
+  border-radius: 999px;
+}
+.btn-accent:hover { filter: brightness(0.9); }
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+}
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actions-pagination-row {
+  margin-top: 1.25rem;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  max-width: 900px;
+  min-width: 700px;
+  width: 100%;
+}

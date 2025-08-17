@@ -17,7 +17,6 @@ export interface Product {
 export interface ProductDto {
     name: string;
     unitId: number;
-    currentStock: number;
     unitsPerRecipe: number;
     laborHoursPerRecipe: number;
     price: number;

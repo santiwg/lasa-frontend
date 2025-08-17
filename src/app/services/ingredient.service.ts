@@ -13,10 +13,9 @@ export class IngredientService {
   constructor() { }
   async getIngredients(page: number, quantity: number): Promise<{
     success: true; data: PaginatedData<Ingredient>
-  }
-    | { success: false; error: string }> {
+  } | { success: false; error: string }> {
     try {
-      const response = await axiosClient.get(`${this.baseUrl}/page=${page}&quantity=${quantity}`);
+      const response = await axiosClient.get(`${this.baseUrl}?page=${page}&quantity=${quantity}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       const message =

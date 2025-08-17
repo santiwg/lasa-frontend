@@ -1,0 +1,86 @@
+<!-- Ingredients Page -->
+<div class="ingredients-page mt-5">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold m-0">Insumos</h2>
+  </div>
+
+  <div class="table-responsive d-flex justify-content-center">
+    <table class="table table-sm align-middle ingredients-table" style="max-width: 900px; min-width: 700px; width: 100%;">
+      <colgroup>
+        <col class="col-id" />
+        <col class="col-name" />
+        <col class="col-unitprice" />
+        <col class="col-stock" />
+        <col class="col-unit" />
+        <col class="col-acciones" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Nombre</th>
+          <th scope="col">Precio Unitario</th>
+          <th scope="col">Stock Actual</th>
+          <th scope="col">Unidad</th>
+          <th scope="col">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (ingredient of ingredients; track ingredient.id) {
+          <tr>
+            <th scope="row">{{ ingredient.id }}</th>
+            <td>{{ ingredient.name }}</td>
+            <td>{{ ingredient.unitPrice | currency:'ARS':'symbol':'1.2-2' }}</td>
+            <td>{{ ingredient.currentStock }}</td>
+            <td>{{ ingredient.unit.name }}</td>
+            <td>
+              <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-sm btn-accent rounded-3" disabled>Editar</button>
+                <button class="btn btn-sm btn-danger rounded-3" disabled>Eliminar</button>
+                <button class="btn btn-sm btn-accent rounded-3" disabled>Movimiento de stock</button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions-pagination-row d-flex align-items-center justify-content-between mt-3 gap-3 mx-auto" style="position: relative; min-height: 48px; max-width: 900px; min-width: 700px; width: 100%;">
+    <div>
+      <button class="btn btn-accent btn-sm" (click)="openIngredientCreateModal()">+ Registrar nuevo ingrediente</button>
+    </div>
+    <app-pagination
+      [page]="page"
+      [hasNext]="hasNext"
+      (previous)="previousPage()"
+      (next)="nextPage()"
+      style="position: absolute; left: 50%; transform: translateX(-50%) translateY(-8px);"
+    ></app-pagination>
+    <div class="d-flex gap-2">
+      <button class="btn btn-accent btn-sm" (click)="showCreateUnitModal = true">+ Unidad</button>
+    </div>
+  </div>
+<!-- Modal Unidad -->
+@if (showCreateUnitModal) {
+  <app-unit-form
+    [unitScope]="unitScope"
+    (cancel)="showCreateUnitModal = false">
+  </app-unit-form>
+}
+</div>
+
+<!-- Modal Crear/Editar Ingrediente -->
+@if (showIngredientModal) {
+  <app-ingredient-form
+    [ingredient]="selectedIngredient"
+    (create)="onCreateIngredient($event)"
+    (cancel)="showIngredientModal = false">
+  </app-ingredient-form>
+}
+@if (showStockMovementModal) {
+  <app-stock-movement-form
+    [ingredient]="selectedIngredient"
+    (updateStock)="updateSelectedIngredientStock($event)"
+    (cancel)="showStockMovementModal = false">
+  </app-stock-movement-form>
+}

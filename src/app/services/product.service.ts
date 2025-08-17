@@ -15,7 +15,7 @@ export class ProductService {
     success: true; data: PaginatedData<Product>
   } | { success: false; error: string }> {
     try {
-      const response = await axiosClient.get(`${this.baseUrl}/page=${page}&quantity=${quantity}`);
+      const response = await axiosClient.get(`${this.baseUrl}?page=${page}&quantity=${quantity}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       const message =
