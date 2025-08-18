@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Product } from '../../interfaces/product.interface';
+import { Product, ProductWithCosts } from '../../interfaces/product.interface';
 import { Ingredient } from '../../interfaces/ingredient.interface';
 import { StockMovementService } from '../../services';
 import { AlertService } from '../../services/alert.service';
@@ -17,7 +17,7 @@ import { CommonModule } from '@angular/common';
 })
 export class StockMovementForm {
   @Input() ingredient?: Ingredient;
-  @Input() product?: Product;
+  @Input() product?: ProductWithCosts;
   @Output() cancel = new EventEmitter<void>();
   //si tiene exito le aviso al componente padre que actualice el stock mostrado en la pantalla
   @Output() updateStock = new EventEmitter<number>();

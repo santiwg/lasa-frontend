@@ -1,0 +1,198 @@
+/* Products Page Layout */
+.products-page {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+    margin-top: 2.5rem;
+}
+
+.products-table {
+    width: 100%;
+    max-width: 1300px;
+    min-width: 900px;
+    background-color: var(--color-surface-background);
+    color: #111;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    padding: 12px 18px 12px 18px;
+    margin-top: 2px;
+}
+
+.products-table thead th {
+    background-color: var(--color-surface-background);
+    font-weight: 700;
+}
+
+.products-table tbody td,
+.products-table tbody th {
+    font-weight: 400;
+}
+
+.products-table th,
+.products-table td {
+    vertical-align: middle;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.95rem;
+}
+.products-table th {
+    vertical-align: middle;
+    padding: 0.7rem 1.2rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.col-id {
+    width: 4%;
+}
+
+.col-name {
+    width: 12%;
+}
+
+.col-unitprice {
+    width: 6%;
+}
+
+.col-stock {
+    width: 6%;
+}
+
+.col-unit {
+    width: 8%;
+}
+
+.col-recipeitems {
+    width: 8%;
+}
+
+.col-details {
+    width: 8%;
+}
+
+.col-cost {
+    width: 12%;
+}
+
+.col-recommended {
+    width: 16%;
+}
+
+.col-acciones {
+    width: 10%;
+}
+
+.btn-accent {
+    background-color: var(--color-accent-primary) !important;
+    border-color: var(--color-accent-primary) !important;
+    color: var(--color-accent-on-primary) !important;
+    border-radius: 999px;
+}
+
+.btn-accent:hover {
+    filter: brightness(0.9);
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+}
+
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.actions-pagination-row {
+    margin-top: 1.25rem;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    max-width: 900px;
+    min-width: 700px;
+    width: 100%;
+}
+
+.products-table .dropdown-toggle {
+    background-color: var(--color-surface-background);
+    color: #111;
+    font-size: 0.85rem;
+    border: none;
+}
+
+.products-table .dropdown-toggle:focus {
+    box-shadow: none;
+}
+
+.products-table .dropdown-menu {
+    background-color: var(--color-surface-background);
+    color: #111;
+    font-size: 0.85rem;
+    min-width: 320px;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    padding: 12px 18px 12px 18px;
+    margin-top: 2px;
+}
+
+/* Property name and value on same line */
+.dropdown-menu .dropdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.97em;
+}
+
+.dropdown-menu .dropdown-row .property {
+    font-weight: 600;
+    color: #222;
+}
+
+.dropdown-menu .dropdown-row .value {
+    color: #222;
+    margin-left: 12px;
+}
+
+.products-table .dropdown-item,
+.products-table .dropdown-menu li {
+    color: #111;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.profit-label {
+    background: var(--color-accent-primary);
+    color: #111;
+    font-size: 0.8rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.7rem;
+    font-weight: 500;
+    margin-left: auto;
+    margin-right: 0;
+    display: inline-block;
+}
+
+/* Profit label positioned like totalMensual in cif-page */
+.profit-label {
+    position: static;
+    font-size: 0.85em;
+    font-weight: 700;
+    background: #ffd37a;
+    color: #111;
+    border-radius: 14px;
+    padding: 3px 12px;
+    margin-right: 12px;
+    margin-bottom: 0;
+    vertical-align: middle;
+    z-index: 2;
+}
+
+    .profit-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    }

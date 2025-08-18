@@ -1,1 +1,160 @@
-<p>product-form works!</p>
+<div class="modal-backdrop fade show"></div>
+<div class="modal fade show" tabindex="-1" role="dialog"
+    style="display:block; position: fixed; inset: 0; z-index: 1050;">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content employee-modal rounded-5">
+            <!-- Header -->
+            <div class="modal-header modal-accent rounded-top-5 align-items-center">
+                <button type="button" class="btn-close btn-close-white me-auto" (click)="onCancel()"
+                    aria-label="Close"></button>
+                <h3 class="modal-title text-center fw-bold text-white w-100 m-0">
+                    {{ isEdit ? 'Editar Producto' : 'Registrar Producto' }}
+                </h3>
+                <div class="ms-auto" style="width:24px;"></div>
+            </div>
+            <!-- Body -->
+            <div class="modal-body px-5 pb-4 pt-4">
+                <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+                    <!-- Fila 1: nombre - precio -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Nombre</label>
+                            <input type="text" class="form-control py-2 rounded-3" formControlName="name"
+                                placeholder="Ej: Bizcocho" />
+                            @if (form.get('name')?.invalid && form.get('name')?.touched) {
+                            <p class="text-danger">El nombre es obligatorio.</p>
+                            }
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Precio unitario</label>
+                            <input type="number" class="form-control py-2 rounded-3" formControlName="price" min="1"
+                                step="0.01" placeholder="Ej: 500" />
+                            @if (form.get('price')?.invalid && form.get('price')?.touched) {
+                            <p class="text-danger">El precio unitario debe ser mayor a 0.</p>
+                            }
+                        </div>
+                    </div>
+                    <!-- Fila 2: unidad - unidadesPorReceta -->
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Unidad</label>
+                            <select class="form-select py-2 rounded-3" formControlName="unitId">
+                                <option [ngValue]="null" disabled>Seleccionar…</option>
+                                @for (u of units; track u.id) {
+                                <option [ngValue]="u.id">{{ u.name }}</option>
+                                }
+                            </select>
+                            @if (form.get('unitId')?.invalid && form.get('unitId')?.touched) {
+                            <p class="text-danger">Debe seleccionar una unidad.</p>
+                            }
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold">Unidades x receta</label>
+                            <input type="number" class="form-control py-2 rounded-3" formControlName="unitsPerRecipe"
+                                min="1" placeholder="Ej: 12" />
+                            @if (form.get('unitsPerRecipe')?.invalid && form.get('unitsPerRecipe')?.touched) {
+                            <p class="text-danger">Debe ser mayor a 0.</p>
+                            }
+                        </div>
+                    </div>
+                    <!-- Fila 3: kilosXMes - horas de trabajo - complejidad -->
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <label class="form-label fw-semibold">Kilos x mes (aprox.)</label>
+                            <input type="number" class="form-control py-2 rounded-3"
+                                formControlName="expectedKilosPerMonth" min="0" step="0.01" placeholder="Ej: 500" />
+                            @if (form.get('expectedKilosPerMonth')?.invalid &&
+                            form.get('expectedKilosPerMonth')?.touched) {
+                            <p class="text-danger">Debe ser 0 o mayor.</p>
+                            }
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-semibold">Horas labor x receta</label>
+                            <input type="number" class="form-control py-2 rounded-3"
+                                formControlName="laborHoursPerRecipe" min="0" step="0.1" placeholder="Ej: 4" />
+                            @if (form.get('laborHoursPerRecipe')?.invalid && form.get('laborHoursPerRecipe')?.touched) {
+                            <p class="text-danger">Debe ser 0 o mayor.</p>
+                            }
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label fw-semibold">Complejidad</label>
+                            <select class="form-select py-2 rounded-3" formControlName="complexityFactor">
+                                <option [ngValue]="1">Simple</option>
+                                <option [ngValue]="1.5">Media</option>
+                                <option [ngValue]="2">Compleja</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- Sección de gestión de items de receta -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-2">Receta</h5>
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio unitario</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--
+									  let idx=$index creates a local variable idx that holds the current index of the item in the array.
+									  This is useful for referencing the position of the item, e.g. for edit/delete actions.
+									-->
+                                    @for (item of recipeItems; track item.ingredient; let idx=$index) {
+                                    <tr>
+                                        <td>{{ item.ingredient.name }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.ingredient.unitPrice | currency:'ARS':'symbol':'1.2-2' }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-accent me-2"
+                                                (click)="editRecipeItem(idx)">Editar</button>
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                (click)="deleteRecipeItem(idx)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <!-- Solo mostrar el error si ambos inputs han sido tocados y la receta es inválida -->
+                            @if (!isRecipeValid() && ingredientTouched && quantityTouched) {
+                            <p class="text-danger mt-2">Debe agregar al menos un ingrediente a la receta.</p>
+                            }
+                        </div>
+                        <div class="row g-2 align-items-end mb-2">
+                            <div class="col-6 col-md-5">
+                                <label class="form-label fw-semibold">Ingrediente</label>
+                                <select class="form-select py-2 rounded-3" [(ngModel)]="selectedIngredientId"
+                                    [ngModelOptions]="{standalone: true}" (change)="onIngredientInput()">
+                                    <option [ngValue]="null" disabled>Seleccionar…</option>
+                                    @for (i of ingredients; track i.id) {
+                                    <option [ngValue]="i.id">{{ i.name }} ({{ i.unitPrice |
+                                        currency:'ARS':'symbol':'1.2-2' }})</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-4 col-md-3">
+                                <label class="form-label fw-semibold">Cantidad</label>
+                                <input type="number" class="form-control py-2 rounded-3" [(ngModel)]="selectedQuantity"
+                                    [ngModelOptions]="{standalone: true}" min="1" placeholder="Ej: 2"
+                                    (input)="onQuantityInput()" />
+                            </div>
+                            <div class="col-2 col-md-2">
+                                <button type="button" class="btn btn-accent px-3" (click)="addRecipeItem()"
+                                    [disabled]="isAddRecipeItemDisabled">
+                                    {{ editIndex !== null ? 'Actualizar' : '+' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-accent px-4" [disabled]="form.invalid||!isRecipeValid()">{{ isEdit ?
+                            'Actualizar' : 'Registrar' }}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

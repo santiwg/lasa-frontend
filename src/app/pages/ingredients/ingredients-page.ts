@@ -19,11 +19,7 @@ import { StockMovementForm } from "../../components/stock-movement-form/stock-mo
   styleUrl: './ingredients-page.css'
 })
 export class IngredientsPage implements OnInit {
-  /**
-   * Confirma y elimina un ingrediente usando SweetAlert2.
-   * Se ejecuta al seleccionar el botón de eliminar.
-   */
-  
+   
   // Lista de ingredientes mostrados en la tabla
   ingredients: Ingredient[] = [];
   // Página actual de la paginación

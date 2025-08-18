@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { axiosClient } from './axios-client';
 import { config } from '../config/env';
 import { PaginatedData } from '../interfaces/paginated-data.interface';
-import { Product, ProductDto } from '../interfaces/product.interface';
+import { Product, ProductDto, ProductWithCosts } from '../interfaces/product.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class ProductService {
 
   constructor() {}
   async getProducts(page: number, quantity: number): Promise<{
-    success: true; data: PaginatedData<Product>
+    success: true; data: PaginatedData<ProductWithCosts>
   } | { success: false; error: string }> {
     try {
       const response = await axiosClient.get(`${this.baseUrl}?page=${page}&quantity=${quantity}`);
@@ -27,7 +27,7 @@ export class ProductService {
   }
 
   async createProduct(product: ProductDto): Promise<{
-    success: true; data: Product
+    success: true; data: ProductWithCosts
   } | { success: false; error: string }> {
     try {
       const response = await axiosClient.post(
@@ -45,7 +45,7 @@ export class ProductService {
   }
 
   async updateProduct(product: ProductDto, id: number): Promise<{
-    success: true; data: Product
+    success: true; data: ProductWithCosts
   } | { success: false; error: string }> {
     try {
       const response = await axiosClient.put(
