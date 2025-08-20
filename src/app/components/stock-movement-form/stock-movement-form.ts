@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, Output } from '@angular/core';
 import { Product, ProductWithCosts } from '../../interfaces/product.interface';
 import { Ingredient } from '../../interfaces/ingredient.interface';
 import { StockMovementService } from '../../services';
@@ -11,9 +11,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-stock-movement-form',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './stock-movement-form.html',
-  styleUrl: './stock-movement-form.css'
+  styleUrls: ['./stock-movement-form.css']
 })
 export class StockMovementForm {
   @Input() ingredient?: Ingredient;

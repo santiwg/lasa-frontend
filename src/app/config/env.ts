@@ -8,5 +8,6 @@ export const config= {
     ingredients: 'http://localhost:3000/ingredients',
     unit: 'http://localhost:3000/units',
     stockMovements: 'http://localhost:3000/stock-movements',
+    users: 'http://localhost:3000/users',
   },
 };

@@ -13,10 +13,13 @@ import { EmployeesPage } from './pages/employees/employees-page';
 import { CashFlowPage } from './pages/cash-flow/cash-flow-page';
 import { CifPage } from './pages/cif/cif-page';
 import { IngredientsPage } from './pages/ingredients/ingredients-page';
+import { canActivateFn } from './guards/auth.guard';
+import { LoginComponent } from './pages/login/login.component';
 
 export const routes: Routes = [
   {
     path: '',
+    canActivate: [canActivateFn],
   component: TemplatePage,
     children: [
       {
@@ -73,4 +76,5 @@ export const routes: Routes = [
       }
     ],
   },
+  { path: 'login', component: LoginComponent },
 ];
