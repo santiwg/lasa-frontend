@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { axiosClient } from './axios-client';
-import { config } from '../config/env';
+import { config } from '../config/config';
 import { CostType, CostTypeDto } from '../interfaces/cost-type.interface';
 
 @Injectable({

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { axiosClient } from './axios-client';
-import { config } from '../config/env';
+import { config } from '../config/config';
 import { PaginatedData } from '../interfaces/paginated-data.interface';
 import { Cif, CifDto } from '../interfaces/cif.interface';
 

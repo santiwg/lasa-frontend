@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { config } from '../config/env';
+import { config } from '../config/config';
 import { axiosClient } from './axios-client';
 
 @Injectable({
