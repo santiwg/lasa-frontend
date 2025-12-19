@@ -11,5 +11,10 @@ export const config = {
     unit: `${environment.backendUrl}/units`,
     stockMovements: `${environment.backendUrl}/stock-movements`,
     users: `${environment.backendUrl}/users`,
+    paymentMethods: `${environment.backendUrl}/payment-methods`,
+    suppliers: `${environment.backendUrl}/suppliers`,
+    purchases: `${environment.backendUrl}/purchases`,
+    payments: `${environment.backendUrl}/payments`,
+    state: `${environment.backendUrl}/states`,
   },
 };
