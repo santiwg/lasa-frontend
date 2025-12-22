@@ -1,1 +1,103 @@
-<p>suppliers works!</p>
+<!-- Suppliers Page -->
+<div class="suppliers-page mt-5">
+    <h2 class="fw-bold mb-3">Proveedores</h2>
+
+    <!-- Tabla de proveedores -->
+    <div class="table-responsive d-flex flex-column align-items-center position-relative">
+        <table class="table table-sm align-middle suppliers-table">
+            <colgroup>
+                <col class="col-id" />
+                <col class="col-business" />
+                <col class="col-data" />
+                <col class="col-balance" />
+                <col class="col-actions" />
+            </colgroup>
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Razon Social</th>
+                    <th scope="col">Datos</th>
+                    <th scope="col">Saldo</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (supplier of suppliers; track supplier.id) {
+                <tr>
+                    <th scope="row">{{ supplier.id }}</th>
+                    <td>{{ supplier.businessName }}</td>
+                    <!-- Dropdown de datos -->
+                    <td class="dropend">
+                        <button
+                            class="btn btn-secondary dropdown-toggle w-100 d-flex align-items-center justify-content-center gap-2"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                            Ver Datos
+                        </button>
+                        <ul class="dropdown-menu p-3">
+                            <li class="dropdown-row">
+                                <span class="property">Teléfono:</span>
+                                <span class="value">{{ supplier.phone || '-' }}</span>
+                            </li>
+                            <li class="dropdown-row">
+                                <span class="property">Email:</span>
+                                <span class="value">{{ supplier.email || '-' }}</span>
+                            </li>
+                            <li class="dropdown-row">
+                                <span class="property">CUIT:</span>
+                                <span class="value">{{ supplier.cuit || '-' }}</span>
+                            </li>
+                            <li class="dropdown-row">
+                                <span class="property">CUIL:</span>
+                                <span class="value">{{ supplier.cuil || '-' }}</span>
+                            </li>
+                        </ul>
+                    </td>
+
+                    <td class="balance-cell" [ngClass]="'balance-' + determineBalanceColor(supplier.balance)">
+                        {{ (supplier.balance < 0 ? -supplier.balance : supplier.balance) | number:'1.0-0' }} </td>
+
+                    <td>
+                        <div class="d-flex justify-content-start gap-2 flex-wrap">
+                            <a class="btn btn-sm btn-view rounded-3" [routerLink]="['/purchases']"
+                                [queryParams]="{ supplierId: supplier.id }">Ver compras</a>
+                            <a class="btn btn-sm btn-view rounded-3" [routerLink]="['/payments']"
+                                [queryParams]="{ supplierId: supplier.id }">Ver Pagos</a>
+                            <!-- Chequear lo de los query params -->
+                            <button class="btn btn-sm btn-accent rounded-3"
+                                (click)="openSupplierEditModal(supplier)">Modificar</button>
+                            <button class="btn btn-sm btn-danger rounded-3"
+                                (click)="deleteSupplier(supplier)">Borrar</button>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="actions-pagination-row d-flex align-items-center justify-content-between mt-3 gap-3 mx-auto"
+        style="position: relative; min-height: 48px; max-width: 900px; min-width: 700px; width: 100%;">
+        <div>
+            <button class="btn btn-accent btn-sm" (click)="openSupplierCreateModal()">+Registrar nuevo
+                proveedor</button>
+        </div>
+        <app-pagination [page]="page" [hasNext]="hasNext" (previous)="previousPage()" (next)="nextPage()"
+            style="position: absolute; left: 50%; transform: translateX(-50%) translateY(-8px);"></app-pagination>
+        <div>
+            @if (!sort || sort === 'businessName') {
+            <button class="btn btn-accent btn-sm" (click)="onSortByBalance()">Ordenar por saldo</button>
+            } @else {
+            <button class="btn btn-accent btn-sm" (click)="onSortByBussinessName()">Ordenar por nombre</button>
+            }
+        </div>
+    </div>
+</div>
+
+@if (showSupplierModal) {
+<app-supplier-form
+    [supplier]="selectedSupplier ?? null"
+    (create)="onCreateSupplier($event)"
+    (update)="onUpdateSupplier($event)"
+    (cancel)="showSupplierModal = false">
+</app-supplier-form>
+}

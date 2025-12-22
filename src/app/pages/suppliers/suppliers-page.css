@@ -1,0 +1,138 @@
+
+/* Suppliers Page Layout */
+.suppliers-page {
+	margin-left: 1.5rem;
+	margin-right: 1.5rem;
+	margin-top: 2.5rem;
+}
+
+.suppliers-table {
+	width: 100%;
+	max-width: 1150px;
+	min-width: 850px;
+	background-color: var(--color-surface-background);
+	color: #111;
+	font-size: 0.85rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	padding: 12px 18px 12px 18px;
+	margin-top: 2px;
+}
+
+.suppliers-table thead th {
+	background-color: var(--color-surface-background);
+	font-weight: 700;
+}
+
+.suppliers-table tbody td,
+.suppliers-table tbody th {
+	font-weight: 400;
+}
+
+.suppliers-table th,
+.suppliers-table td {
+	vertical-align: middle;
+	padding: 0.7rem 1.2rem;
+	font-size: 0.95rem;
+}
+
+.suppliers-table th {
+	font-size: 0.85rem;
+	white-space: nowrap;
+}
+
+.col-id { width: 6%; }
+.col-business { width: 28%; }
+.col-data { width: 18%; }
+.col-balance { width: 12%; }
+.col-actions { width: 36%; }
+
+.btn-accent {
+	background-color: var(--color-accent-primary) !important;
+	border-color: var(--color-accent-primary) !important;
+	color: var(--color-accent-on-primary) !important;
+	border-radius: 999px;
+}
+
+.btn-accent:hover {
+	filter: brightness(0.9);
+}
+
+.btn-view {
+	background-color: transparent;
+	border: 1px solid var(--color-accent-primary);
+	color: var(--color-accent-primary);
+	border-radius: 999px;
+}
+
+.btn-view:hover {
+	filter: brightness(0.9);
+}
+
+.btn-danger {
+	background-color: #dc3545;
+	color: #fff;
+	border: none;
+	border-radius: 999px;
+}
+
+.suppliers-table .dropdown-toggle,
+.suppliers-table .btn-secondary {
+	background-color: var(--color-surface-background);
+	color: #111;
+	font-size: 0.85rem;
+	border: none;
+}
+
+.suppliers-table .dropdown-toggle:focus,
+.suppliers-table .btn-secondary:focus {
+	box-shadow: none;
+}
+
+.suppliers-table .dropdown-menu {
+	background-color: var(--color-surface-background);
+	color: #111;
+	font-size: 0.85rem;
+	min-width: 320px;
+	border-radius: 12px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	padding: 12px 18px 12px 18px;
+	margin-top: 2px;
+}
+
+.dropdown-menu .dropdown-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 6px;
+	font-size: 0.97em;
+}
+
+.dropdown-menu .dropdown-row .property {
+	font-weight: 600;
+	color: #222;
+}
+
+.dropdown-menu .dropdown-row .value {
+	color: #222;
+	margin-left: 12px;
+}
+
+.balance-cell {
+	text-align: center;
+	font-weight: 700;
+	border-radius: 2px;
+}
+
+.balance-green { background-color: rgba(78, 242, 106, 0.35); }
+.balance-red { background-color: rgba(231, 76, 60, 0.35); }
+.balance-grey { background-color: rgba(166, 166, 166, 0.35); }
+
+.actions-pagination-row {
+	margin-top: 1.25rem;
+	margin-bottom: 1.5rem;
+	gap: 1rem;
+	max-width: 900px;
+	min-width: 700px;
+	width: 100%;
+}
