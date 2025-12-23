@@ -1,1 +1,139 @@
-<p>purchases works!</p>
+<!-- Purchases Page -->
+<div class="purchases-page mt-5">
+	<h2 class="fw-bold mb-3">Compras</h2>
+
+	<!-- Tabla de compras -->
+	<div class="table-responsive d-flex flex-column align-items-center position-relative">
+		<table class="table table-sm align-middle purchases-table">
+			<colgroup>
+				<col class="col-id" />
+				<col class="col-date" />
+				<col class="col-supplier" />
+				<col class="col-amount" />
+				<col class="col-state" />
+				<col class="col-actions" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">Fecha</th>
+					<th scope="col">Proveedor</th>
+					<th scope="col">Monto</th>
+					<th scope="col">Estado</th>
+					<th scope="col">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (purchase of purchases; track purchase.id) {
+					<tr>
+						<th scope="row">{{ purchase.id }}</th>
+						<td>{{ purchase.dateTime | date:'dd/MM/yy - HH:mm' }}</td>
+
+						<!-- Dropdown de proveedor: muestra businessName y despliega datos -->
+						<td class="dropend">
+							<button
+								class="btn supplier-pill dropdown-toggle w-100 d-flex align-items-center justify-content-center"
+								type="button"
+								data-bs-toggle="dropdown"
+								aria-expanded="false"
+								data-bs-auto-close="outside"
+							>
+								{{ purchase.supplier.businessName }}
+							</button>
+							<ul class="dropdown-menu p-3">
+								<li class="dropdown-row">
+									<span class="property">Teléfono:</span>
+									<span class="value">{{ purchase.supplier.phone || '-' }}</span>
+								</li>
+								<li class="dropdown-row">
+									<span class="property">Email:</span>
+									<span class="value">{{ purchase.supplier.email || '-' }}</span>
+								</li>
+								<li class="dropdown-row">
+									<span class="property">CUIT:</span>
+									<span class="value">{{ purchase.supplier.cuit || '-' }}</span>
+								</li>
+								<li class="dropdown-row">
+									<span class="property">CUIL:</span>
+									<span class="value">{{ purchase.supplier.cuil || '-' }}</span>
+								</li>
+							</ul>
+						</td>
+
+						<td>{{ calculateTotalCost(purchase) | number:'1.0-0' }}</td>
+
+						<td>
+							<span class="state-pill">{{ purchase.state.name }}</span>
+						</td>
+
+						<td>
+							<div class="d-flex justify-content-center gap-2">
+								<!-- Detalles: solo ingrediente, cantidad y precio histórico -->
+								<div class="dropstart">
+									<button
+										class="btn btn-sm btn-accent rounded-3 dropdown-toggle"
+										type="button"
+										data-bs-toggle="dropdown"
+										aria-expanded="false"
+										data-bs-auto-close="outside"
+									>
+										Ver detalle
+									</button>
+									<ul class="dropdown-menu p-3">
+										@for (d of purchase.details; track d.id) {
+											<li class="dropdown-row">
+												<span class="property">{{ d.ingredient.name }}</span>
+												<span class="value">x {{ d.quantity }} · {{ d.historicalUnitPrice | number:'1.0-0' }}$</span>
+											</li>
+										}
+										
+									</ul>
+								</div>
+
+								<button class="btn btn-sm btn-danger rounded-3" (click)="deletePurchase(purchase)">Borrar</button>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="actions-pagination-row d-flex align-items-center justify-content-between mt-3 gap-3 mx-auto" style="position: relative; min-height: 48px; max-width: 900px; min-width: 700px; width: 100%;">
+		<div>
+			<button class="btn btn-accent btn-sm">+Registrar nueva compra</button>
+			<!-- (click)="openPurchaseCreateModal()" -->
+		</div>
+		<app-pagination
+			[page]="page"
+			[hasNext]="hasNext"
+			(previous)="previousPage()"
+			(next)="nextPage()"
+			style="position: absolute; left: 50%; transform: translateX(-50%) translateY(-8px);"
+		></app-pagination>
+		<div class="d-flex gap-2">
+			<button class="btn btn-accent btn-sm" (click)="openSupplierSelectionModal()">Filtrar por proveedor</button>
+			<button class="btn btn-accent btn-sm" (click)="openStateSelectionModal()">Filtrar por estado</button>
+		</div>
+	</div>
+</div>
+
+@if (showSupplierSelectionModal) {
+	<app-filter-selection-form
+		headerText="Filtrar por proveedor"
+		displayProp="businessName"
+		[fetchOptions]="fetchSupplierOptions"
+		(selected)="onApplyFilters('supplier', $event)"
+		(cancel)="showSupplierSelectionModal = false"
+	></app-filter-selection-form>
+}
+
+@if (showStateSelectionModal) {
+	<app-filter-selection-form
+		headerText="Filtrar por estado"
+		displayProp="name"
+		[fetchOptions]="fetchStateOptions"
+		(selected)="onApplyFilters('state', $event)"
+		(cancel)="showStateSelectionModal = false"
+	></app-filter-selection-form>
+}

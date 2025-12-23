@@ -48,7 +48,7 @@ export class SuppliersPage {
   // Obtiene los productos de la API y actualiza la lista y paginación
   private refreshPage() {
     this.globalStatusService.setLoading(true);
-    this.supplierService.getSuppliers(this.page, this.quantity, this.sort, this.order).then(response => {
+    this.supplierService.getSuppliersWithBalance(this.page, this.quantity, this.sort, this.order).then(response => {
       if (response.success) {
         this.suppliers = response.data.data;
         this.hasNext = response.data.hasMore;

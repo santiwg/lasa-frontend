@@ -3,7 +3,7 @@ import { axiosClient } from './axios-client';
 import { config } from '../config/config';
 import { PaginatedData } from '../interfaces/paginated-data.interface';
 import { Product, ProductDto, ProductWithCosts } from '../interfaces/product.interface';
-import { SupplierDto, SupplierWithBalance } from '../interfaces/supplier.interface';
+import { Supplier, SupplierDto, SupplierWithBalance } from '../interfaces/supplier.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +12,11 @@ export class SupplierService {
   private baseUrl = config.urls.suppliers;
 
   constructor() {}
-  async getSuppliers(page: number, quantity: number,sort:string='',order:"desc"|"asc"="desc"): Promise<{
+  async getSuppliersWithBalance(page: number, quantity: number,sort:string='',order:"desc"|"asc"="desc"): Promise<{
     success: true; data: PaginatedData<SupplierWithBalance>
   } | { success: false; error: string }> {
     try {
-      const response = await axiosClient.get(`${this.baseUrl}?page=${page}&quantity=${quantity}&sort=${sort}&order=${order}`);
+      const response = await axiosClient.get(`${this.baseUrl}/with-balance?page=${page}&quantity=${quantity}&sort=${sort}&order=${order}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       const message =
@@ -27,6 +27,21 @@ export class SupplierService {
     }
    
   }
+  
+    async getSuppliers(page: number, quantity: number): Promise<{
+      success: true; data: PaginatedData<Supplier>
+    } | { success: false; error: string }> {
+      try {
+        const response = await axiosClient.get(`${this.baseUrl}?page=${page}&quantity=${quantity}`);
+        return { success: true, data: response.data };
+      } catch (error: any) {
+        const message =
+          error.response?.data?.message ||  // si existe un mensaje de error que manda el backend lo uso
+          error.message ||                  // mensaje generado por Axios
+          "Unknown Error";                  // por si no se obtiene
+        return { success: false, error: message };
+      }
+    }
 
   async createSupplier(supplier: SupplierDto): Promise<{
     success: true; data: SupplierWithBalance
