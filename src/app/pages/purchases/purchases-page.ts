@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Pagination } from '../../components/pagination/pagination';
 import { FilterSelectionForm, FilterSelectionResult, SelectableEntity } from '../../components/filter-selection-form/filter-selection-form';
+import { PurchaseForm } from '../../components/purchase-form/purchase-form';
 import { Purchase } from '../../interfaces/purchase.interface';
 import { State } from '../../interfaces/state.interface';
 import { Supplier, SupplierWithBalance } from '../../interfaces/supplier.interface';
@@ -13,7 +15,7 @@ import { SupplierService } from '../../services/supplier.service';
 
 @Component({
   selector: 'app-purchases',
-  imports: [CommonModule, Pagination, FilterSelectionForm],
+  imports: [CommonModule, Pagination, FilterSelectionForm, PurchaseForm],
   templateUrl: './purchases-page.html',
   styleUrl: './purchases-page.css'
 })
@@ -55,6 +57,7 @@ export class PurchasesPage {
   };
 
   constructor(
+    private readonly route: ActivatedRoute,
     private readonly purchaseService: PurchaseService,
     private readonly supplierService: SupplierService,
     private readonly stateService: StateService,
@@ -64,10 +67,18 @@ export class PurchasesPage {
 
   // Inicializa la página cargando los productos
   ngOnInit() {
+    const supplierIdParam = this.route.snapshot.queryParamMap.get('supplierId');
+    if (supplierIdParam) {
+      const supplierId = Number(supplierIdParam);
+      if (!Number.isNaN(supplierId)) {
+        this.filterType = 'supplier';
+        this.filterObjectId = supplierId;
+      }
+    }
     this.refreshPage();
   }
   calculateTotalCost(purchase: Purchase): number {
-    return purchase.details.reduce((total, detail) => total + (detail.historicalUnitPrice * detail.quantity), 0);
+    return this.purchaseService.calculatePurchaseTotal(purchase);
   }
 
   // Obtiene los productos de la API y actualiza la lista y paginación

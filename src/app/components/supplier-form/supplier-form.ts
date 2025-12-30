@@ -44,13 +44,9 @@ export class SupplierForm implements OnInit {
     return (group: AbstractControl) => {
       const cuit = group.get('cuit')?.value;
       const cuil = group.get('cuil')?.value;
-      const cuitCtrl = group.get('cuit');
-      const cuilCtrl = group.get('cuil');
-
-      // Nota UX: usamos `dirty` además de `touched`.
-      // Si el usuario borra el valor y NO hace blur, `touched` puede quedar en false,
-      // pero `dirty` pasa a true; así mostramos el error apenas lo borra (antes de guardar).
-      if (!cuit && !cuil && (cuitCtrl?.dirty || cuilCtrl?.dirty || cuitCtrl?.touched || cuilCtrl?.touched)) {
+      // Si ambos están vacíos, el formulario es inválido.
+      // Esto mantiene el botón deshabilitado hasta que se complete al menos uno.
+      if (!cuit && !cuil) {
         return { cuitCuilRequired: true };
       }
       return null;

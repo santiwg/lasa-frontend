@@ -16,7 +16,7 @@ export interface SupplierWithBalance {
     email: string;
     cuit: string | null;
     cuil: string | null;
-    balance: number;
+    balancePayable: number;
 }
 export interface Supplier {
     id: number;

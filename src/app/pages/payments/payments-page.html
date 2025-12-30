@@ -1,1 +1,159 @@
-<p>payments works!</p>
+<!-- Payments Page -->
+<div class="payments-page mt-5">
+	<h2 class="fw-bold mb-3">Pagos</h2>
+
+	<!-- Tabla de pagos -->
+	<div class="table-responsive d-flex flex-column align-items-center position-relative">
+		<table class="table table-sm align-middle payments-table">
+			<colgroup>
+				<col class="col-id" />
+				<col class="col-date" />
+				<col class="col-supplier" />
+				<col class="col-amount" />
+				<col class="col-method" />
+				<col class="col-actions" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">Fecha</th>
+					<th scope="col">Proveedor</th>
+					<th scope="col">Monto</th>
+					<th scope="col">Medio de Pago</th>
+					<th scope="col">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (payment of payments; track payment.id) {
+					<tr>
+						<th scope="row">{{ payment.id }}</th>
+						<td>{{ payment.dateTime | date:'dd/MM/yy - HH:mm':'UTC' }}</td>
+						<td class="dropend">
+							<button
+								class="btn supplier-pill dropdown-toggle w-100 d-flex align-items-center justify-content-center"
+								type="button"
+								data-bs-toggle="dropdown"
+								aria-expanded="false"
+								data-bs-auto-close="outside"
+							>
+								{{ payment.supplier.businessName }}
+							</button>
+							<ul class="dropdown-menu p-3">
+								<li class="dropdown-row">
+									<span class="property">Teléfono:</span>
+									<span class="value">{{ payment.supplier.phone || '-' }}</span>
+								</li>
+								<li class="dropdown-row">
+									<span class="property">Email:</span>
+									<span class="value">{{ payment.supplier.email || '-' }}</span>
+								</li>
+								<li class="dropdown-row">
+									<span class="property">CUIT:</span>
+									<span class="value">{{ payment.supplier.cuit || '-' }}</span>
+								</li>
+								<li class="dropdown-row">
+									<span class="property">CUIL:</span>
+									<span class="value">{{ payment.supplier.cuil || '-' }}</span>
+								</li>
+							</ul>
+						</td>
+
+						<td>{{ calculatePaymentTotal(payment) | number:'1.0-0' }}</td>
+
+						<td>
+							<span class="method-pill">{{ payment.paymentMethod.name }}</span>
+						</td>
+
+						<td>
+							<div class="d-flex justify-content-center gap-2">
+								<div class="dropstart">
+									<button
+										class="btn btn-sm btn-accent rounded-3 dropdown-toggle"
+										type="button"
+										data-bs-toggle="dropdown"
+										aria-expanded="false"
+										data-bs-auto-close="outside"
+									>
+										Ver detalle
+									</button>
+									<ul class="dropdown-menu p-3">
+										@if (payment.details && payment.details.length > 0) {
+											@for (d of payment.details; track d.id) {
+												@if (d.purchase && d.purchase.dateTime) {
+													<li class="dropdown-row flex-column align-items-start">
+														<div>
+															<span class="property">Compra:</span>
+															<span class="value">{{ d.purchase.dateTime | date:'dd/MM/yy - HH:mm':'UTC' }}</span>
+														</div>
+														<div>
+															<span class="property">Monto aplicado:</span>
+															<span class="value">{{ d.amount | number:'1.0-0' }} $</span>
+														</div>
+													</li>
+												}
+											}
+										}
+										@if (payment.unassignedAmount && payment.unassignedAmount > 0) {
+											<li class="dropdown-row flex-column align-items-start border-top pt-2 mt-2">
+												<div>
+													<span class="property">Total no asignado:</span>
+													<span class="value">{{ payment.unassignedAmount | number:'1.0-0' }} $</span>
+												</div>
+											</li>
+										}
+									</ul>
+								</div>
+
+								<button class="btn btn-sm btn-danger rounded-3" (click)="deletePayment(payment)">Borrar</button>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="actions-pagination-row d-flex align-items-center justify-content-between mt-3 gap-3 mx-auto" style="position: relative; min-height: 48px; max-width: 900px; min-width: 700px; width: 100%;">
+		<div>
+			<button class="btn btn-accent btn-sm" (click)="openPaymentCreateModal()">+Registrar nuevo pago</button>
+		</div>
+		<app-pagination
+			[page]="page"
+			[hasNext]="hasNext"
+			(previous)="previousPage()"
+			(next)="nextPage()"
+			style="position: absolute; left: 50%; transform: translateX(-50%) translateY(-8px);"
+		></app-pagination>
+		<div class="d-flex gap-2">
+			<button class="btn btn-accent btn-sm" (click)="openSupplierSelectionModal()">Filtrar por proveedor</button>
+			<button class="btn btn-accent btn-sm" (click)="openPaymentMethodSelectionModal()">Filtrar por Medio de Pago</button>
+		</div>
+	</div>
+</div>
+
+@if (showSupplierSelectionModal) {
+	<app-filter-selection-form
+		headerText="Filtrar por proveedor"
+		displayProp="businessName"
+		[fetchOptions]="fetchSupplierOptions"
+		(selected)="onApplyFilters('supplier', $event)"
+		(cancel)="showSupplierSelectionModal = false"
+	></app-filter-selection-form>
+}
+
+@if (showPaymentModal) {
+	<app-payment-form
+		(create)="onCreatePayment($event)"
+		(cancel)="showPaymentModal = false"
+	></app-payment-form>
+}
+
+@if (showPaymentMethodSelectionModal) {
+	<app-filter-selection-form
+		headerText="Filtrar por Medio de Pago"
+		displayProp="name"
+		[fetchOptions]="fetchPaymentMethodOptions"
+		(selected)="onApplyFilters('paymentMethod', $event)"
+		(cancel)="showPaymentMethodSelectionModal = false"
+	></app-filter-selection-form>
+}

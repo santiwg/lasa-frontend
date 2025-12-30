@@ -2,6 +2,14 @@
 <div class="suppliers-page mt-5">
     <h2 class="fw-bold mb-3">Proveedores</h2>
 
+    <!-- Informativo de colores de saldo -->
+    <div class="mb-2">
+        <small class="text-muted">
+            <span style="color: #28a745; font-weight: 600;">Verde</span>: se nos debe &nbsp;|&nbsp;
+            <span style="color: #dc3545; font-weight: 600;">Rojo</span>: debemos
+        </small>
+    </div>
+
     <!-- Tabla de proveedores -->
     <div class="table-responsive d-flex flex-column align-items-center position-relative">
         <table class="table table-sm align-middle suppliers-table">
@@ -53,8 +61,8 @@
                         </ul>
                     </td>
 
-                    <td class="balance-cell" [ngClass]="'balance-' + determineBalanceColor(supplier.balance)">
-                        {{ (supplier.balance < 0 ? -supplier.balance : supplier.balance) | number:'1.0-0' }} </td>
+                    <td class="balance-cell" [ngClass]="'balance-' + determineBalanceColor(supplier.balancePayable)">
+                        {{ (supplier.balancePayable < 0 ? -supplier.balancePayable : supplier.balancePayable) | number:'1.0-0' }} </td>
 
                     <td>
                         <div class="d-flex justify-content-start gap-2 flex-wrap">

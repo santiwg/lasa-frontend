@@ -1,0 +1,100 @@
+<div class="modal-backdrop fade show"></div>
+<div
+	class="modal fade show"
+	tabindex="-1"
+	role="dialog"
+	style="display:block; position: fixed; inset: 0; z-index: 1050;"
+>
+	<div class="modal-dialog modal-md modal-dialog-centered" role="document">
+		<div class="modal-content purchase-modal rounded-5">
+			<!-- Header -->
+			<div class="modal-header modal-accent rounded-top-5 align-items-center">
+				<button type="button" class="btn-close btn-close-white me-auto" (click)="onCancel()" aria-label="Close"></button>
+				<h3 class="modal-title text-center fw-bold text-white w-100 m-0">
+					{{ 'Registrar pago' }}
+				</h3>
+				<div class="ms-auto" style="width:24px;"></div>
+			</div>
+
+			<!-- Body -->
+			<div class="modal-body px-5 pb-4 pt-4">
+				<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+					<!-- Proveedor -->
+					<div class="row mb-3">
+						<div class="col-10">
+							<label class="form-label fw-semibold">Proveedor</label>
+							<select class="form-select py-2 rounded-3" formControlName="supplierId">
+								<option [ngValue]="null" disabled>Seleccionar…</option>
+								@for (s of suppliers; track s.id) {
+									<option [ngValue]="s.id">{{ s.businessName }}</option>
+								}
+							</select>
+						</div>
+						<div class="col-2 d-flex align-items-end">
+							<button type="button" class="btn btn-accent w-100 add-supplier-btn" (click)="openCreateSupplierModal()">+</button>
+						</div>
+					</div>
+
+					<!-- Monto pagado + Medio de pago -->
+					<div class="row mb-3">
+						<div class="col-3">
+							<label class="form-label fw-semibold">Monto pagado</label>
+							   <input
+								   type="number"
+								   class="form-control py-2 rounded-3"
+								   formControlName="paidAmount"
+								   min="1"
+								   placeholder="Ej: 1000"
+							   />
+							   @if (form.get('paidAmount')?.invalid && form.get('paidAmount')?.touched) {
+								   <p class="text-danger">Debe ser mayor a 0.</p>
+							   }
+						</div>
+						<div class="col-9">
+							<label class="form-label fw-semibold">Medio de pago</label>
+							<select class="form-select py-2 rounded-3" formControlName="paymentMethodId">
+								<option [ngValue]="null" disabled>Seleccionar…</option>
+								@for (p of paymentMethods; track p.id) {
+									<option [ngValue]="p.id">{{ p.name }}</option>
+								}
+							</select>
+							@if (
+								form.get('paymentMethodId')?.invalid &&
+								(form.get('paymentMethodId')?.touched || form.get('paymentMethodId')?.dirty)
+							) {
+								<p class="text-danger">Debe seleccionar un medio de pago.</p>
+							}
+						</div>
+					</div>
+
+					<!-- Fecha -->
+					<div class="row mb-3">
+						<div class="col-12">
+							<label class="form-label fw-semibold">Fecha</label>
+							<input type="date" class="form-control py-2 rounded-3" formControlName="date" />
+							@if (form.get('date')?.invalid && form.get('date')?.touched) {
+								@if (form.get('date')?.hasError('futureDate')) {
+									<p class="text-danger">La fecha no puede ser futura.</p>
+								} @else {
+									<p class="text-danger">La fecha es obligatoria.</p>
+								}
+							}
+						</div>
+					</div>
+
+					<div class="d-flex justify-content-center mt-4">
+						<button type="submit" class="btn btn-accent px-4" [disabled]="form.invalid">Registrar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+@if (showCreateSupplierModal) {
+	<app-supplier-form
+		[supplier]="null"
+		(create)="onAddSupplier($event)"
+		(cancel)="showCreateSupplierModal = false"
+	></app-supplier-form>
+}

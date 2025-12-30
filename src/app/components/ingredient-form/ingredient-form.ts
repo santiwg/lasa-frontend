@@ -20,7 +20,7 @@ export class IngredientForm implements OnInit {
   @Output() update = new EventEmitter<Ingredient>();
   @Output() cancel = new EventEmitter<void>();
   units: Unit[] = [];
-  unitScope: string = 'Alimento'; //ambito usado para las unidades
+  unitScopes: string[] = ['Alimento', 'Liquido']; //ambitos usado para las unidades
   form: FormGroup;
 
   get isEdit(): boolean { return !!this.ingredient; }
@@ -29,7 +29,7 @@ export class IngredientForm implements OnInit {
     this.form = this.fb.group({
       name: ['', Validators.required],
       unitId: [null, Validators.required],
-  unitPrice: [0, [Validators.required, Validators.min(1)]]
+      unitPrice: [0, [Validators.required, Validators.min(1)]]
     });
   }
 
@@ -62,7 +62,7 @@ export class IngredientForm implements OnInit {
     }
   }
   async updateIngredient(ingredient: IngredientDto, id: number) {
-      this.globalStatusService.setLoading(true);
+    this.globalStatusService.setLoading(true);
     const response = await this.ingredientService.updateIngredient(ingredient, id);
     this.globalStatusService.setLoading(false);
     if (response.success) {
@@ -72,7 +72,7 @@ export class IngredientForm implements OnInit {
       this.alertService.error(`Surgió un problema editando el ingrediente.\n ${response.error}`);
     }
     this.onCancel(); // close the modal after update
-  
+
   }
   async createIngredient(ingredient: IngredientDto): Promise<void> {
     this.globalStatusService.setLoading(true);
@@ -92,14 +92,17 @@ export class IngredientForm implements OnInit {
   // Busca las unidades según el scope
   async loadUnits() {
     this.globalStatusService.setLoading(true);
-    const response = await this.unitService.getUnitsByScope(this.unitScope);
-    this.globalStatusService.setLoading(false);
-    if (response.success) {
-      this.units = response.data;
-    } else {
-      await this.alertService.error(`Error al obtener las unidades: ${response.error}`);
-      this.onCancel(); // close the modal if units cannot be loaded
+    for (const unitScope of this.unitScopes) {
+      const response = await this.unitService.getUnitsByScope(unitScope);
+      if (response.success) {
+        this.units = [...this.units, ...response.data];
+      } else {
+        this.globalStatusService.setLoading(false);
+        await this.alertService.error(`Error al obtener las unidades: ${response.error}`);
+        this.onCancel(); // close the modal if units cannot be loaded
+      }
     }
+    this.globalStatusService.setLoading(false);
   }
 }
 

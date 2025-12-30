@@ -17,7 +17,20 @@ export class PaymentService {
     success: true; data: PaginatedData<Payment>
   } | { success: false; error: string }> {
     try {
-      const response = await axiosClient.get(`${this.baseUrl}?page=${page}&quantity=${quantity}&filterType=${filterType}&filterObjectId=${filterObjectId || ''}`);
+      const params = new URLSearchParams({
+        page: String(page),
+        quantity: String(quantity),
+      });
+
+      if (filterType) {
+        params.set('filterType', filterType);
+      }
+      if (filterObjectId != null) {
+        params.set('filterObjectId', String(filterObjectId));
+      }
+
+      const response = await axiosClient.get(`${this.baseUrl}?${params.toString()}`);
+      console.log(response.data); //BORRAR
       return { success: true, data: response.data };
     } catch (error: any) {
       const message =
@@ -32,10 +45,12 @@ export class PaymentService {
     success: true; data: Payment
   } | { success: false; error: string }> {
     try {
+      console.log(payment); //BORRAR
       const response = await axiosClient.post(
         `${this.baseUrl}`,
         payment
       );
+      console.log(response.data); //BORRAR
       return { success: true, data: response.data }
     } catch (error: any) {
       const message =
@@ -60,6 +75,14 @@ export class PaymentService {
         "Unknown Error";
       return { success: false, error: message }
     }
+  }
+
+  // Calcula el total del pago: suma de detalles más el monto no asignado
+  calculatePaymentTotal(payment: Payment): number {
+    if (!payment) return 0;
+    const assigned = (payment.details ?? []).reduce((total, d) => total + d.amount, 0);
+    const unassigned = payment.unassignedAmount ?? 0;
+    return assigned + unassigned;
   }
 }
 

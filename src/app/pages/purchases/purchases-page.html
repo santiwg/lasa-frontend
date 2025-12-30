@@ -27,7 +27,7 @@
 				@for (purchase of purchases; track purchase.id) {
 					<tr>
 						<th scope="row">{{ purchase.id }}</th>
-						<td>{{ purchase.dateTime | date:'dd/MM/yy - HH:mm' }}</td>
+						<td>{{ purchase.dateTime | date:'dd/MM/yy - HH:mm':'UTC' }}</td>
 
 						<!-- Dropdown de proveedor: muestra businessName y despliega datos -->
 						<td class="dropend">
@@ -101,8 +101,7 @@
 
 	<div class="actions-pagination-row d-flex align-items-center justify-content-between mt-3 gap-3 mx-auto" style="position: relative; min-height: 48px; max-width: 900px; min-width: 700px; width: 100%;">
 		<div>
-			<button class="btn btn-accent btn-sm">+Registrar nueva compra</button>
-			<!-- (click)="openPurchaseCreateModal()" -->
+			<button class="btn btn-accent btn-sm" (click)="openPurchaseCreateModal()">+Registrar nueva compra</button>
 		</div>
 		<app-pagination
 			[page]="page"
@@ -117,7 +116,12 @@
 		</div>
 	</div>
 </div>
-
+@if (showPurchaseModal) {
+	<app-purchase-form
+		(create)="onCreatePurchase($event)"
+		(cancel)="showPurchaseModal = false">
+	</app-purchase-form>
+}
 @if (showSupplierSelectionModal) {
 	<app-filter-selection-form
 		headerText="Filtrar por proveedor"

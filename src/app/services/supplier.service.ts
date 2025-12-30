@@ -15,14 +15,12 @@ export class SupplierService {
   async getSuppliersWithBalance(page: number, quantity: number,sort:string='',order:"desc"|"asc"="desc"): Promise<{
     success: true; data: PaginatedData<SupplierWithBalance>
   } | { success: false; error: string }> {
+    // IMPLEMENTACIÓN ORIGINAL (pegando al backend)
     try {
       const response = await axiosClient.get(`${this.baseUrl}/with-balance?page=${page}&quantity=${quantity}&sort=${sort}&order=${order}`);
       return { success: true, data: response.data };
     } catch (error: any) {
-      const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Unknown Error";
+      const message = error.response?.data?.message || error.message || "Unknown Error";
       return { success: false, error: message };
     }
    
@@ -31,14 +29,12 @@ export class SupplierService {
     async getSuppliers(page: number, quantity: number): Promise<{
       success: true; data: PaginatedData<Supplier>
     } | { success: false; error: string }> {
+      // IMPLEMENTACIÓN ORIGINAL (pegando al backend)
       try {
         const response = await axiosClient.get(`${this.baseUrl}?page=${page}&quantity=${quantity}`);
         return { success: true, data: response.data };
       } catch (error: any) {
-        const message =
-          error.response?.data?.message ||  // si existe un mensaje de error que manda el backend lo uso
-          error.message ||                  // mensaje generado por Axios
-          "Unknown Error";                  // por si no se obtiene
+        const message = error.response?.data?.message || error.message || "Unknown Error";
         return { success: false, error: message };
       }
     }
@@ -93,6 +89,20 @@ export class SupplierService {
         "Unknown Error";
       return { success: false, error: message }
     }
+  }
+  // Convierte cualquier "supplier" tipo listado (SupplierWithBalance o Supplier) a Supplier.
+  // En este form no usamos `balance` y la interfaz Supplier requiere `purchases`/`payments`.
+  supplierToSupplier(s: SupplierWithBalance | Supplier): Supplier {
+    return {
+      id: s.id,
+      businessName: s.businessName,
+      phone: s.phone,
+      email: s.email,
+      cuit: s.cuit,
+      cuil: s.cuil,
+      purchases: [],
+      payments: [],
+    };
   }
   // Métodos CRUD aquí
 }

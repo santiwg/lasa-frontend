@@ -15,9 +15,19 @@ export class PurchaseService {
     success: true; data: PaginatedData<Purchase>
   } | { success: false; error: string }> {
     try {
-      const response = await axiosClient.get(
-        `${this.baseUrl}?page=${page}&quantity=${quantity}&filterType=${filterType}&filterObjectId=${filterObjectId || ''}`
-      );
+      const params = new URLSearchParams({
+        page: String(page),
+        quantity: String(quantity),
+      });
+
+      if (filterType) {
+        params.set('filterType', filterType);
+      }
+      if (filterObjectId != null) {
+        params.set('filterObjectId', String(filterObjectId));
+      }
+
+      const response = await axiosClient.get(`${this.baseUrl}?${params.toString()}`);
       return { success: true, data: response.data };
     } catch (error: any) {
       const message =
@@ -60,5 +70,14 @@ export class PurchaseService {
         "Unknown Error";
       return { success: false, error: message }
     }
+  }
+
+  // Calcula el monto total de una compra a partir de sus detalles
+  calculatePurchaseTotal(purchase: Purchase): number {
+    if (!purchase || !purchase.details) return 0;
+    return purchase.details.reduce(
+      (total, detail) => total + detail.historicalUnitPrice * detail.quantity,
+      0
+    );
   }
 }

@@ -1,1 +1,165 @@
-<p>purchase-form works!</p>
+<div class="modal-backdrop fade show"></div>
+<div class="modal fade show" tabindex="-1" role="dialog"
+    style="display:block; position: fixed; inset: 0; z-index: 1050;">
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+        <div class="modal-content purchase-modal rounded-5">
+            <!-- Header -->
+            <div class="modal-header modal-accent rounded-top-5 align-items-center">
+                <button type="button" class="btn-close btn-close-white me-auto" (click)="onCancel()"
+                    aria-label="Close"></button>
+                <h3 class="modal-title text-center fw-bold text-white w-100 m-0">
+                    {{ 'Registrar compra' }}
+                </h3>
+                <div class="ms-auto" style="width:24px;"></div>
+            </div>
+            <!-- Body -->
+            <div class="modal-body px-5 pb-4 pt-4">
+                <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+                    <!-- Fila 1: proveedor -->
+                    <div class="row mb-3">
+                        <div class="col-10">
+                            <label class="form-label fw-semibold">Proveedor</label>
+                            <select class="form-select py-2 rounded-3" formControlName="supplierId">
+                                <option [ngValue]="null" disabled>Seleccionar…</option>
+                                @for (s of suppliers; track s.id) {
+                                <option [ngValue]="s.id">{{ s.businessName }}</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-2 d-flex align-items-end">
+                            <button type="button" class="btn btn-accent w-100 add-supplier-btn" (click)="openCreateSupplierModal()">
+                                +</button>
+                        </div>
+                    </div>
+                    <!-- Fila 2: monto pagado - método de pago -->
+                    <div class="row mb-3">
+                        
+                        <div class="col-3">
+                            <label class="form-label fw-semibold">Monto pagado</label>
+                            <input type="number" class="form-control py-2 rounded-3" formControlName="paidAmount"
+                                min="0" placeholder="Ej: 12" />
+                            @if (form.get('paidAmount')?.invalid && form.get('paidAmount')?.touched) {
+                            <p class="text-danger">Debe ser mayor o igual a 0.</p>
+                            }
+                        </div>
+                        <div class="col-9">
+                            <label class="form-label fw-semibold">Medio de pago</label>
+                            <select class="form-select py-2 rounded-3" formControlName="paymentMethodId">
+                                <option [ngValue]="null" disabled>Seleccionar…</option>
+                                @for (p of paymentMethods; track p.id) {
+                                <option [ngValue]="p.id">{{ p.name }}</option>
+                                }
+                            </select>
+                            @if (
+                                form.get('paymentMethodId')?.hasError('paymentMethodRequired') &&
+                                (form.get('paidAmount')?.touched || form.get('paidAmount')?.dirty || form.get('paymentMethodId')?.touched)
+                            ) {
+                            <p class="text-danger">Debe seleccionar un medio de pago.</p>
+                            }
+                        </div>
+                    </div>
+                    <!-- Fila 3: Fecha -->
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Fecha de compra</label>
+                            <input type="date" class="form-control py-2 rounded-3" formControlName="date" />
+                            @if (form.get('date')?.invalid && form.get('date')?.touched) {
+                            @if (form.get('date')?.hasError('futureDate')) {
+                            <p class="text-danger">La fecha no puede ser futura.</p>
+                            } @else {
+                            <p class="text-danger">La fecha es obligatoria.</p>
+                            }
+                            }
+
+                        </div>
+                    </div>
+
+                    <!-- Sección de gestión de dettales de compra -->
+                    <div class="mb-4">
+                        <h5 class="fw-bold mb-2">Detalles de compra</h5>
+                        <div class="table-responsive mb-3">
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Ingrediente</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio unitario</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!--
+									  let idx=$index creates a local variable idx that holds the current index of the detail in the array.
+									  This is useful for referencing the position of the detail, e.g. for edit/delete actions.
+									-->
+                                    @for (detail of purchaseDetails; track detail.ingredient.id; let idx=$index) {
+                                    <tr>
+                                        <td>{{ detail.ingredient.name }}</td>
+                                        <td>{{ detail.quantity }}</td>
+                                        <td>{{ detail.historicalUnitPrice | currency:'ARS':'symbol':'1.2-2' }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm btn-accent me-2"
+                                                (click)="editPurchaseDetail(idx)">Editar</button>
+                                            <button type="button" class="btn btn-sm btn-danger"
+                                                (click)="deletePurchaseDetail(idx)">Eliminar</button>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <!-- Solo mostrar el error si ambos inputs han sido tocados y la compra es inválida -->
+                            @if (!isPurchaseDetailsValid() && ingredientTouched && quantityTouched) {
+                            <p class="text-danger mt-2">Debe agregar al menos un detalle a la compra.</p>
+                            }
+                        </div>
+                        <div class="d-flex gap-2 align-items-end mb-2">
+                            <div style="flex:2">
+                                <label class="form-label fw-semibold">Ingrediente</label>
+                                <select class="form-select py-2 rounded-3" [(ngModel)]="selectedIngredientId"
+                                    [ngModelOptions]="{standalone: true}" (change)="onIngredientInput()">
+                                    <option [ngValue]="null" disabled>Seleccionar…</option>
+                                    @for (i of ingredients; track i.id) {
+                                    <option [ngValue]="i.id">{{ i.name }} </option>
+                                    }
+                                </select>
+                            </div>
+                            <div style="flex:1">
+                                <label class="form-label fw-semibold">Cantidad</label>
+                                <input type="number" class="form-control py-2 rounded-3" [(ngModel)]="selectedQuantity"
+                                    [ngModelOptions]="{standalone: true}" min="1" placeholder="Ej: 2"
+                                    (input)="onQuantityInput()" />
+                            </div>
+                            <div style="flex:1">
+                                <label class="form-label fw-semibold">Precio Unitario</label>
+                                <input type="number" class="form-control py-2 rounded-3" [(ngModel)]="selectedUnitPrice"
+                                    [ngModelOptions]="{standalone: true}" min="1" placeholder="Ej: 500"
+                                    (input)="onUnitPriceInput()" />
+                            </div>
+                            <div style="flex:1; display:flex; align-items:end;">
+                                <button type="button" class="btn btn-accent px-3 w-100" (click)="addPurchaseDetail()"
+                                    [disabled]="isAddPurchaseDetailDisabled">
+                                    {{ editIndex !== null ? 'Actualizar' : '+' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Advertencia sobre actualización de precios -->
+                    <div class="text-center mb-3">
+                        <small class="text-warning" style="font-size:0.9rem;">Se actualizará el precio de los insumos en el sistema</small>
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" class="btn btn-accent px-4" [disabled]="form.invalid||!isPurchaseDetailsValid()">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (showCreateSupplierModal) {
+    <app-supplier-form
+        [supplier]="null"
+        (create)="onAddSupplier($event)"
+        (cancel)="showCreateSupplierModal = false">
+    </app-supplier-form>
+}

@@ -1,30 +1,34 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { Supplier, SupplierWithBalance } from '../../interfaces/supplier.interface';
-import { Purchase } from '../../interfaces/purchase.interface';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { Ingredient } from '../../interfaces/ingredient.interface';
-import { PurchaseService } from '../../services/purchase.service';
-import { SupplierService } from '../../services/supplier.service';
-import { GlobalStatusService } from '../../services/global-status-service';
+import { PaymentMethod } from '../../interfaces/payment-method.interface';
+import { Purchase, PurchaseDto } from '../../interfaces/purchase.interface';
+import { Supplier, SupplierWithBalance } from '../../interfaces/supplier.interface';
 import { AlertService } from '../../services/alert.service';
+import { GlobalStatusService } from '../../services/global-status-service';
 import { IngredientService } from '../../services';
 import { PaymentMethodService } from '../../services/payment-method.service';
-import { PaymentMethod } from '../../interfaces/payment-method.interface';
+import { PurchaseService } from '../../services/purchase.service';
+import { SupplierService } from '../../services/supplier.service';
+import { SupplierForm } from '../supplier-form/supplier-form';
+
 
 @Component({
   selector: 'app-purchase-form',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, SupplierForm],
   templateUrl: './purchase-form.html',
   styleUrl: './purchase-form.css'
 })
-export class PurchaseForm {
+export class PurchaseForm implements OnInit {
   //@Input() purchase?: Purchase; // de momento no se puede editar las compras
   //@Output() update = new EventEmitter<Purchase>();
   @Output() create = new EventEmitter<Purchase>();
-  
+
   @Output() cancel = new EventEmitter<void>();
   suppliers: Supplier[] = [];
-  
+
   form: FormGroup;
   ingredients: Ingredient[] = [];
   paymentMethods: PaymentMethod[] = [];
@@ -36,6 +40,7 @@ export class PurchaseForm {
   editIndex: number | null = null;
   ingredientTouched: boolean = false;
   quantityTouched: boolean = false;
+  showCreateSupplierModal: boolean = false;
   onIngredientInput() {
     this.ingredientTouched = true;
   }
@@ -46,157 +51,241 @@ export class PurchaseForm {
     this.unitPriceTouched = true;
   }
 
-  
+
 
   constructor(private fb: FormBuilder, private purchaseService: PurchaseService, private supplierService: SupplierService, private globalStatusService: GlobalStatusService, private alertService: AlertService, private ingredientService: IngredientService, private paymentMethodService: PaymentMethodService) {
+    // Fecha local actual (sin problemas de zona horaria)
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const localDate = `${yyyy}-${mm}-${dd}`;
     this.form = this.fb.group({
       supplierId: [null, Validators.required],
-      paidAmount: [0],
+      paidAmount: [0, [Validators.min(0)]],
       paymentMethodId: [null],
-      date: [new Date().toISOString().substring(0, 10), Validators.required]
-    });
+      date: [localDate, [Validators.required, PurchaseForm.noFutureDateValidator()]]
+    }, { validators: PurchaseForm.paymentMethodRequiredWhenPaidValidator() });
   }
 
-  ngOnInit() {
-    this.loadSuppliers();
-    this.loadIngredients();
-    this.loadPaymentMethods();
-    //Como no se pueden editar las compras no tenemos el patch inicial
+  
+
+  // Si se ingresa paidAmount (> 0), entonces debe ingresarse una forma de pago.
+  static paymentMethodRequiredWhenPaidValidator(): ValidatorFn {
+    return (group: AbstractControl) => {
+      const paidAmount = Number(group.get('paidAmount')?.value ?? 0);
+      const paymentMethodCtrl = group.get('paymentMethodId');
+      const paymentMethodId = paymentMethodCtrl?.value;
+
+      const requiresPaymentMethod = paidAmount > 0;
+      const missingPaymentMethod = paymentMethodId == null || paymentMethodId === '';
+
+      // Marcamos el error específicamente en el control `paymentMethodId`.
+      // Así, el mensaje "Debe seleccionar un medio de pago" aparece únicamente
+      // cuando hay un paidAmount cargado y falta el método.
+      if (requiresPaymentMethod && missingPaymentMethod) {
+        const existing = paymentMethodCtrl?.errors ?? {};
+        if (!existing['paymentMethodRequired']) {
+          paymentMethodCtrl?.setErrors({ ...existing, paymentMethodRequired: true });
+        }
+        return { paymentMethodRequired: true };
+      }
+
+      // Si ya no aplica la regla, limpiamos SOLO este error sin pisar otros.
+      if (paymentMethodCtrl?.errors?.['paymentMethodRequired']) {
+        const { paymentMethodRequired, ...rest } = paymentMethodCtrl.errors;
+        paymentMethodCtrl.setErrors(Object.keys(rest).length ? rest : null);
+      }
+      return null;
+    };
   }
 
-  async loadSuppliers() {
-    this.globalStatusService.setLoading(true);
-    const response = await this.supplierService.getSuppliers(1, 1000);
-    this.globalStatusService.setLoading(false);
-    if (response.success) {
-      this.suppliers = response.data.data;
-    } else {
-      await this.alertService.error(`Error al obtener los proveedores: ${response.error}`);
-      this.onCancel(); // close the modal if units cannot be loaded
-    }
-  }
-  async loadPaymentMethods(){
-    this.globalStatusService.setLoading(true);
-    const response = await this.paymentMethodService.getPaymentMethods();
-    this.globalStatusService.setLoading(false);
-    if (response.success) {
-      this.paymentMethods = response.data;
-    } else {
-      await this.alertService.error(`Error al obtener los métodos de pago: ${response.error}`);
-      this.onCancel(); // close the modal if payment methods cannot be loaded
-    }
-  } 
+  // Evita que se seleccione una fecha futura (comparación por día, sin hora)
+  static noFutureDateValidator(): ValidatorFn {
+    return (control: AbstractControl) => {
+      const raw = control.value;
+      if (!raw) return null;
 
-  async loadIngredients() {
+      const selected = new Date(raw);
+      if (Number.isNaN(selected.getTime())) return null;
+
+      selected.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      return selected.getTime() > today.getTime() ? { futureDate: true } : null;
+    };
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.loadCatalogs();
+    // Como no se pueden editar las compras no tenemos el patch inicial
+  }
+
+  private async loadCatalogs(): Promise<void> {
     this.globalStatusService.setLoading(true);
-    const response = await this.ingredientService.getIngredients(1, 1000); //ARREGLAR, DEBERIA PODERSE PASAR SIN PARAMETROS DE PAGINACION
-    this.globalStatusService.setLoading(false);
-    if (response.success) {
-      this.ingredients = response.data.data;
-    } else {
-      await this.alertService.error(`Error al obtener ingredientes: ${response.error}`);
+    try {
+      const [suppliersResp, paymentMethodsResp, ingredientsResp] = await Promise.all([
+        this.supplierService.getSuppliers(1, 1000),
+        this.paymentMethodService.getPaymentMethods(),
+        this.ingredientService.getIngredients(1, 1000),
+      ]);
+
+      if (!suppliersResp.success) {
+        await this.alertService.error(`Error al obtener los proveedores: ${suppliersResp.error}`);
+        this.onCancel();
+        return;
+      }
+
+      if (!paymentMethodsResp.success) {
+        await this.alertService.error(`Error al obtener los métodos de pago: ${paymentMethodsResp.error}`);
+        this.onCancel();
+        return;
+      }
+
+      if (!ingredientsResp.success) {
+        await this.alertService.error(`Error al obtener ingredientes: ${ingredientsResp.error}`);
+        this.onCancel();
+        return;
+      }
+
+      this.suppliers = suppliersResp.data.data;
+      this.paymentMethods = paymentMethodsResp.data;
+      this.ingredients = ingredientsResp.data.data;
+    } finally {
+      this.globalStatusService.setLoading(false);
     }
   }
 
   /**
-   * Agrega un nuevo item de receta o actualiza uno en edición.
+   * Agrega un nuevo detalle de compra o actualiza uno en edición.
    * Si editIndex es null, agrega al final. Si no, inserta en la posición original.
    * Limpia los inputs después de agregar/actualizar.
    */
-  addRecipeItem() {
+  addPurchaseDetail() {
     if (!this.selectedIngredientId || !this.selectedQuantity || this.selectedQuantity <= 0) return;
     const ingredient = this.ingredients.find(i => i.id === this.selectedIngredientId);
     if (!ingredient) return;
-    const item = {
+    const detail = {
       ingredient,
-      quantity: this.selectedQuantity
+      quantity: this.selectedQuantity,
+      historicalUnitPrice: this.selectedUnitPrice != null && this.selectedUnitPrice >= 0 ? this.selectedUnitPrice : 0
     };
     if (this.editIndex !== null) {
       // Insertar en la posición original (no pisar si el array cambió)
-      this.recipeItems.splice(this.editIndex, 0, item);
+      this.purchaseDetails.splice(this.editIndex, 0, detail);
       this.editIndex = null;
     } else {
-      this.recipeItems.push(item);
+      this.purchaseDetails.push(detail);
     }
-    this.selectedIngredientId = null;
-    this.selectedQuantity = null;
-    this.ingredientTouched = false;
-    this.quantityTouched = false;
+    this.resetDetailInputs();
+  }
+
+  openCreateSupplierModal() {
+    this.showCreateSupplierModal = true;
+  }
+  onAddSupplier(supplier: SupplierWithBalance) {
+    const normalized = this.supplierService.supplierToSupplier(supplier);
+    this.suppliers.push(normalized);
+    this.form.patchValue({ supplierId: normalized.id });
+    this.showCreateSupplierModal = false;
   }
 
   /**
    * Prepara un item para edición: lo quita del array y pone sus datos en los inputs.
    * El índice se guarda en editIndex para saber dónde reinsertar.
    */
-  editRecipeItem(index: number) {
-    const item = this.recipeItems[index];
-    this.selectedIngredientId = item.ingredient.id;
-    this.selectedQuantity = item.quantity;
+  editPurchaseDetail(index: number) {
+    const detail = this.purchaseDetails[index];
+    this.selectedIngredientId = detail.ingredient.id;
+    this.selectedQuantity = detail.quantity;
+    this.selectedUnitPrice = detail.historicalUnitPrice;
     this.editIndex = index;
-    this.recipeItems.splice(index, 1);
+    this.purchaseDetails.splice(index, 1);
   }
 
   /**
-   * Elimina un item de receta por índice.
+   * Elimina un detalle por índice.
    */
-  deleteRecipeItem(index: number) {
-    this.recipeItems.splice(index, 1);
-
+  deletePurchaseDetail(index: number) {
+    this.purchaseDetails.splice(index, 1);
   }
-  get isAddRecipeItemDisabled(): boolean {
-    // Habilitar cuando ambos inputs tengan algún valor (validación fuerte queda en addRecipeItem)
+
+  /**
+   * Limpia los inputs de detalle luego de agregar/editar.
+   */
+  private resetDetailInputs() {
+    this.selectedIngredientId = null;
+    this.selectedQuantity = null;
+    this.selectedUnitPrice = null;
+    this.ingredientTouched = false;
+    this.quantityTouched = false;
+    this.unitPriceTouched = false;
+  }
+
+  get isAddPurchaseDetailDisabled(): boolean {
+    // Habilitar cuando ambos inputs tengan algún valor (validación fuerte queda en addPurchaseDetail)
     return this.selectedIngredientId == null || this.selectedQuantity == null;
   }
-  isRecipeValid(): boolean {
-    return this.recipeItems.length > 0;
+  isPurchaseDetailsValid(): boolean {
+    return this.purchaseDetails.length > 0;
   }
 
   async submit() {
-    if (this.form.invalid || !this.isRecipeValid()) {
+    if (this.form.invalid || !this.isPurchaseDetailsValid()) {
       this.form.markAllAsTouched();
+      this.form.updateValueAndValidity();
       return;
     }
     const v = this.form.value;
-    const payload: ProductDto = {
-      name: v.name.trim(),
-      unitId: Number(v.unitId),
-      unitsPerRecipe: Number(v.unitsPerRecipe),
-      laborHoursPerRecipe: Number(v.laborHoursPerRecipe),
-      price: Number(v.price),
-      expectedKilosPerMonth: Number(v.expectedKilosPerMonth),
-      complexityFactor: Number(v.complexityFactor),
-      items: this.recipeItems.map(item => ({
+    
+    // Crear fecha en zona horaria local sin conversión UTC
+    let dateTime: Date;
+    if (v.date) {
+      const [year, month, day] = v.date.split('-').map(Number);
+      dateTime = new Date(year, month - 1, day);
+      
+      // Agregar hora actual solo si la fecha seleccionada es hoy
+      const today = new Date();
+      const isToday = year === today.getFullYear() && 
+                      month - 1 === today.getMonth() && 
+                      day === today.getDate();
+      
+      if (isToday) {
+        dateTime.setHours(today.getHours(), today.getMinutes(), today.getSeconds(), today.getMilliseconds());
+      } else {
+        dateTime.setHours(0, 0, 0, 0);
+      }
+    } else {
+      dateTime = new Date();
+    }
+    
+    const payload: PurchaseDto = {
+      supplierId: Number(v.supplierId),
+      paidAmount: Number(v.paidAmount) > 0 ? Number(v.paidAmount) : null,
+      paymentMethodId: Number(v.paymentMethodId) ? Number(v.paymentMethodId) : null,
+      dateTime: dateTime,
+      details: this.purchaseDetails.map(item => ({
         ingredientId: item.ingredient.id,
-        quantity: item.quantity
+        quantity: item.quantity,
+        historicalUnitPrice: item.historicalUnitPrice
       }))
     };
-    if (this.isEdit) {
-      await this.updateProduct(payload, this.product!.id!);
-    } else {
-      await this.createProduct(payload);
-    }
+    //Como no se pueden editar las compras, siempre creamos una nueva
+    await this.createPurchase(payload);
   }
-  async updateProduct(product: ProductDto, id: number) {
+
+
+  async createPurchase(purchase: PurchaseDto): Promise<void> {
     this.globalStatusService.setLoading(true);
-    const response = await this.productService.updateProduct(product, id);
+    const response = await this.purchaseService.createPurchase(purchase);
     this.globalStatusService.setLoading(false);
     if (response.success) {
-      this.alertService.success('¡Producto actualizado!');
-      this.update.emit(response.data);
-    } else {
-      this.alertService.error(`Surgió un problema editando el producto.\n ${response.error}`);
-    }
-    this.onCancel(); // close the modal after update
-  }
-  async createProduct(product: ProductDto): Promise<void> {
-    this.globalStatusService.setLoading(true);
-    const response = await this.productService.createProduct(product);
-    this.globalStatusService.setLoading(false);
-    if (response.success) {
-      this.alertService.success('¡Producto creado!');
+      await this.alertService.success('¡Compra registrada!');
+      await this.alertService.info('Algunos estados de compra pueden quedar desactualizados. Refresca la página para ver los cambios.');
       this.create.emit(response.data);
     } else {
-      this.alertService.error(`Surgió un problema creando el producto.\n ${response.error}`);
+      this.alertService.error(`Surgió un problema registrando la compra.\n ${response.error}`);
     }
     this.onCancel();
   }

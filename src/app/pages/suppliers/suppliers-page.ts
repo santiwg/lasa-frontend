@@ -116,7 +116,7 @@ export class SuppliersPage {
     }
     else if (sort === 'balance') {
       this.suppliers.sort((a, b) => {
-        const comparison = a.balance - b.balance;
+        const comparison = a.balancePayable - b.balancePayable;
         return order === 'asc' ? comparison : -comparison;
       });
     }
@@ -162,11 +162,11 @@ export class SuppliersPage {
       }
     }
   }
-  determineBalanceColor(balance: number): string {
-    if (balance > 0) {
-      return 'green';
-    } else if (balance < 0) {
+  determineBalanceColor(balancePayable: number): string {
+    if (balancePayable > 0) {
       return 'red';
+    } else if (balancePayable < 0) {
+      return 'green';
     } else {
       return 'grey';
     } 

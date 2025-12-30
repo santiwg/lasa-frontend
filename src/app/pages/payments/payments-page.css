@@ -1,0 +1,129 @@
+/* Payments Page Layout (basado en purchases-page) */
+.payments-page {
+	margin-left: 1.5rem;
+	margin-right: 1.5rem;
+	margin-top: 2.5rem;
+}
+
+.payments-table {
+	width: 100%;
+	max-width: 1150px;
+	min-width: 850px;
+	background-color: var(--color-surface-background);
+	color: #111;
+	font-size: 0.85rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	padding: 12px 18px 12px 18px;
+	margin-top: 2px;
+}
+
+.payments-table thead th {
+	background-color: var(--color-surface-background);
+	font-weight: 700;
+}
+
+.payments-table tbody td,
+.payments-table tbody th {
+	font-weight: 400;
+}
+
+.payments-table th,
+.payments-table td {
+	vertical-align: middle;
+	padding: 0.7rem 1.2rem;
+	font-size: 0.95rem;
+}
+
+.payments-table th {
+	font-size: 0.85rem;
+	white-space: nowrap;
+}
+
+.col-id { width: 6%; }
+.col-date { width: 16%; }
+.col-supplier { width: 22%; }
+.col-amount { width: 12%; }
+.col-method { width: 14%; }
+.col-actions { width: 20%; }
+
+.btn-accent {
+	background-color: var(--color-accent-primary) !important;
+	border-color: var(--color-accent-primary) !important;
+	color: var(--color-accent-on-primary) !important;
+	border-radius: 999px;
+}
+
+.btn-accent:hover { filter: brightness(0.9); }
+
+.btn-danger {
+	background-color: #dc3545;
+	color: #fff;
+	border: none;
+	border-radius: 999px;
+}
+
+.payments-table .dropdown-toggle {
+	border: none;
+}
+
+.payments-table .dropdown-toggle:focus { box-shadow: none; }
+
+.payments-table .dropdown-menu {
+	background-color: var(--color-surface-background);
+	color: #111;
+	font-size: 0.85rem;
+	min-width: 340px;
+	border-radius: 12px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	padding: 12px 18px 12px 18px;
+	margin-top: 2px;
+}
+
+.dropdown-menu .dropdown-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 6px;
+	font-size: 0.97em;
+}
+
+.dropdown-menu .dropdown-row .property {
+	font-weight: 600;
+	color: #222;
+}
+
+.dropdown-menu .dropdown-row .value {
+	color: #222;
+	margin-left: 12px;
+}
+
+.supplier-pill {
+	background-color: rgba(0, 0, 0, 0.08);
+	color: #111;
+	border-radius: 999px;
+	padding: 0.25rem 0.9rem;
+	font-size: 0.85rem;
+}
+
+.supplier-pill:hover { filter: brightness(0.95); }
+
+.method-pill {
+	display: inline-block;
+	background-color: rgba(0, 0, 0, 0.08);
+	color: #111;
+	border-radius: 999px;
+	padding: 0.25rem 0.9rem;
+	font-size: 0.85rem;
+	font-weight: 600;
+}
+
+.actions-pagination-row {
+	margin-top: 1.25rem;
+	margin-bottom: 1.5rem;
+	gap: 1rem;
+	max-width: 900px;
+	min-width: 700px;
+	width: 100%;
+}
+
