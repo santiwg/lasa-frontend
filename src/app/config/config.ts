@@ -1,4 +1,5 @@
 import { environment } from '../../environments/environment';
+import { ProductForm } from '../components/product-form/product-form';
 
 export const config = {
   urls: {
@@ -16,5 +17,6 @@ export const config = {
     purchases: `${environment.backendUrl}/purchases`,
     payments: `${environment.backendUrl}/payments`,
     state: `${environment.backendUrl}/states`,
+    productionInstances: `${environment.backendUrl}/production-instances`,
   },
 };

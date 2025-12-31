@@ -1,3 +1,5 @@
+import { Product } from "./product.interface";
+
 export interface ProductionInstance {
     id: number;
     dateTime: Date;
@@ -6,7 +8,7 @@ export interface ProductionInstance {
 
 export interface ProductionInstanceDetail {
     id: number;
-    productionInstance: ProductionInstance;
+    //productionInstance: ProductionInstance; no usamos la relación bidireccional aquí
     product: Product;
     quantity: number;
     unitCost: number; // cost at the time of production
