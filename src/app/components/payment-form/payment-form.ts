@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormsModule, ValidatorFn } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Supplier, SupplierWithBalance } from '../../interfaces/supplier.interface';
 import { Payment, PaymentDto } from '../../interfaces/payment.interface';
@@ -10,6 +10,7 @@ import { SupplierService } from '../../services/supplier.service';
 import { PaymentMethodService } from '../../services/payment-method.service';
 import { GlobalStatusService } from '../../services/global-status-service';
 import { AlertService } from '../../services/alert.service';
+import { DateUtilsService } from '../../services/date-utils.service';
 import { SupplierForm } from '../supplier-form/supplier-form';
 
 @Component({
@@ -36,43 +37,22 @@ export class PaymentForm implements OnInit {
     private readonly paymentMethodService: PaymentMethodService,
     private readonly globalStatusService: GlobalStatusService,
     private readonly alertService: AlertService,
+    private readonly dateUtils: DateUtilsService,
   ) {
     // Fecha local actual (sin problemas de zona horaria)
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const localDate = `${yyyy}-${mm}-${dd}`;
+    const localDate = this.dateUtils.getTodayLocalDateString();
     this.form = this.fb.group(
       {
         supplierId: [null, Validators.required],
         paidAmount: [null, [Validators.required, Validators.min(1)]],
         paymentMethodId: [null, Validators.required],
-        date: [localDate, [Validators.required, PaymentForm.noFutureDateValidator()]],
+        date: [localDate, [Validators.required, this.dateUtils.noFutureDateValidator()]],
       },
     );
   }
 
   async ngOnInit(): Promise<void> {
     await this.loadCatalogs();
-  }
-
-
-  // Evita que se seleccione una fecha futura (misma lógica que en PurchaseForm)
-  static noFutureDateValidator(): ValidatorFn {
-    return (control: AbstractControl) => {
-      const raw = control.value;
-      if (!raw) return null;
-
-      const selected = new Date(raw);
-      if (Number.isNaN(selected.getTime())) return null;
-
-      selected.setHours(0, 0, 0, 0);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      return selected.getTime() > today.getTime() ? { futureDate: true } : null;
-    };
   }
 
   private async loadCatalogs(): Promise<void> {
@@ -118,27 +98,9 @@ export class PaymentForm implements OnInit {
     }
 
     const v = this.form.value;
-    
+
     // Crear fecha en zona horaria local sin conversión UTC
-    let dateTime: Date;
-    if (v.date) {
-      const [year, month, day] = v.date.split('-').map(Number);
-      dateTime = new Date(year, month - 1, day);
-      
-      // Agregar hora actual solo si la fecha seleccionada es hoy
-      const today = new Date();
-      const isToday = year === today.getFullYear() && 
-                      month - 1 === today.getMonth() && 
-                      day === today.getDate();
-      
-      if (isToday) {
-        dateTime.setHours(today.getHours(), today.getMinutes(), today.getSeconds(), today.getMilliseconds());
-      } else {
-        dateTime.setHours(0, 0, 0, 0);
-      }
-    } else {
-      dateTime = new Date();
-    }
+    const dateTime = this.dateUtils.buildDateTimeFromDateString(v.date);
     
     const payload: PaymentDto = {
       supplierId: Number(v.supplierId),

@@ -1,0 +1,109 @@
+<div class="modal-backdrop fade show"></div>
+<div
+	class="modal fade show"
+	tabindex="-1"
+	role="dialog"
+	style="display:block; position: fixed; inset: 0; z-index: 1050;"
+>
+	<div class="modal-dialog modal-md modal-dialog-centered" role="document">
+		<div class="modal-content production-modal rounded-5">
+			<!-- Header -->
+			<div class="modal-header modal-accent rounded-top-5 align-items-center">
+				<button type="button" class="btn-close btn-close-white me-auto" (click)="onCancel()" aria-label="Close"></button>
+				<h3 class="modal-title text-center fw-bold text-white w-100 m-0">
+					{{ 'Registrar producción' }}
+				</h3>
+				<div class="ms-auto" style="width:24px;"></div>
+			</div>
+
+			<!-- Body -->
+			<div class="modal-body px-5 pb-4 pt-4">
+				<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+					<!-- Fecha -->
+					<div class="row mb-3">
+						<div class="col-12">
+							<label class="form-label fw-semibold">Fecha</label>
+							<input type="date" class="form-control py-2 rounded-3" formControlName="date" />
+							@if (form.get('date')?.invalid && form.get('date')?.touched) {
+								@if (form.get('date')?.hasError('futureDate')) {
+									<p class="text-danger">La fecha no puede ser futura.</p>
+								} @else {
+									<p class="text-danger">La fecha es obligatoria.</p>
+								}
+							}
+						</div>
+					</div>
+
+					<!-- Sección detalles -->
+					<div class="mb-4">
+						<h5 class="fw-bold mb-2">Productos producidos</h5>
+						<div class="table-responsive mb-3">
+							<table class="table table-sm align-middle">
+								<thead>
+									<tr>
+										<th>Producto</th>
+										<th>Cantidad</th>
+										<th>Acciones</th>
+									</tr>
+								</thead>
+								<tbody>
+									@for (detail of productionDetails; track detail.product.id; let idx=$index) {
+										<tr>
+											<td>{{ detail.product.name }}</td>
+											<td>{{ detail.quantity | number:'1.0-2' }}</td>
+											<td>
+												<button type="button" class="btn btn-sm btn-accent me-2" (click)="editProductionDetail(idx)">Editar</button>
+												<button type="button" class="btn btn-sm btn-danger" (click)="deleteProductionDetail(idx)">Eliminar</button>
+											</td>
+										</tr>
+									}
+								</tbody>
+							</table>
+							@if (!isProductionDetailsValid() && productTouched && quantityTouched) {
+								<p class="text-danger mt-2">Debe agregar al menos un detalle a la producción.</p>
+							}
+						</div>
+
+						<div class="d-flex gap-2 align-items-end mb-2">
+							<div style="flex:2">
+								<label class="form-label fw-semibold">Producto</label>
+								<select
+									class="form-select py-2 rounded-3"
+									[(ngModel)]="selectedProductId"
+									[ngModelOptions]="{standalone: true}"
+									(change)="onProductInput()"
+								>
+									<option [ngValue]="null" disabled>Seleccionar…</option>
+									@for (p of products; track p.id) {
+										<option [ngValue]="p.id">{{ p.name }}</option>
+									}
+								</select>
+							</div>
+							<div style="flex:1">
+								<label class="form-label fw-semibold">Cantidad</label>
+								<input
+									type="number"
+									class="form-control py-2 rounded-3"
+									[(ngModel)]="selectedQuantity"
+									[ngModelOptions]="{standalone: true}"
+									min="0"
+									placeholder="Ej: 2"
+									(input)="onQuantityInput()"
+								/>
+							</div>
+							<div style="flex:1; display:flex; align-items:end;">
+								<button type="button" class="btn btn-accent px-3 w-100" (click)="addProductionDetail()" [disabled]="isAddDetailDisabled">
+									{{ editIndex !== null ? 'Actualizar' : '+' }}
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="d-flex justify-content-center mt-4">
+						<button type="submit" class="btn btn-accent px-4" [disabled]="form.invalid || !isProductionDetailsValid()">Registrar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,1 +1,19 @@
-<p>home works!</p>
+<div class="home-page mt-5">
+	<h2 class="fw-bold mb-4">Inicio</h2>
+
+	<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+		@for (card of cards; track card.path) {
+			<div class="col">
+				<a class="home-card text-decoration-none" [routerLink]="card.path">
+					<div class="home-card-icon" aria-hidden="true">
+						<img class="home-card-icon-img" [src]="card.iconSrc" [alt]="card.iconAlt" loading="lazy" />
+					</div>
+					<div class="home-card-body">
+						<h5 class="home-card-title fw-bold m-0">{{ card.title }}</h5>
+						<p class="home-card-subtitle m-0">{{ card.subtitle }}</p>
+					</div>
+				</a>
+			</div>
+		}
+	</div>
+</div>

@@ -6,6 +6,7 @@ import { PaymentMethod } from '../../interfaces/payment-method.interface';
 import { Purchase, PurchaseDto } from '../../interfaces/purchase.interface';
 import { Supplier, SupplierWithBalance } from '../../interfaces/supplier.interface';
 import { AlertService } from '../../services/alert.service';
+import { DateUtilsService } from '../../services/date-utils.service';
 import { GlobalStatusService } from '../../services/global-status-service';
 import { IngredientService } from '../../services';
 import { PaymentMethodService } from '../../services/payment-method.service';
@@ -53,18 +54,23 @@ export class PurchaseForm implements OnInit {
 
 
 
-  constructor(private fb: FormBuilder, private purchaseService: PurchaseService, private supplierService: SupplierService, private globalStatusService: GlobalStatusService, private alertService: AlertService, private ingredientService: IngredientService, private paymentMethodService: PaymentMethodService) {
+  constructor(
+    private fb: FormBuilder,
+    private purchaseService: PurchaseService,
+    private supplierService: SupplierService,
+    private globalStatusService: GlobalStatusService,
+    private alertService: AlertService,
+    private ingredientService: IngredientService,
+    private paymentMethodService: PaymentMethodService,
+    private dateUtils: DateUtilsService,
+  ) {
     // Fecha local actual (sin problemas de zona horaria)
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    const localDate = `${yyyy}-${mm}-${dd}`;
+    const localDate = this.dateUtils.getTodayLocalDateString();
     this.form = this.fb.group({
       supplierId: [null, Validators.required],
       paidAmount: [0, [Validators.min(0)]],
       paymentMethodId: [null],
-      date: [localDate, [Validators.required, PurchaseForm.noFutureDateValidator()]]
+      date: [localDate, [Validators.required, this.dateUtils.noFutureDateValidator()]]
     }, { validators: PurchaseForm.paymentMethodRequiredWhenPaidValidator() });
   }
 
@@ -97,23 +103,6 @@ export class PurchaseForm implements OnInit {
         paymentMethodCtrl.setErrors(Object.keys(rest).length ? rest : null);
       }
       return null;
-    };
-  }
-
-  // Evita que se seleccione una fecha futura (comparación por día, sin hora)
-  static noFutureDateValidator(): ValidatorFn {
-    return (control: AbstractControl) => {
-      const raw = control.value;
-      if (!raw) return null;
-
-      const selected = new Date(raw);
-      if (Number.isNaN(selected.getTime())) return null;
-
-      selected.setHours(0, 0, 0, 0);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      return selected.getTime() > today.getTime() ? { futureDate: true } : null;
     };
   }
 
@@ -238,27 +227,9 @@ export class PurchaseForm implements OnInit {
       return;
     }
     const v = this.form.value;
-    
+
     // Crear fecha en zona horaria local sin conversión UTC
-    let dateTime: Date;
-    if (v.date) {
-      const [year, month, day] = v.date.split('-').map(Number);
-      dateTime = new Date(year, month - 1, day);
-      
-      // Agregar hora actual solo si la fecha seleccionada es hoy
-      const today = new Date();
-      const isToday = year === today.getFullYear() && 
-                      month - 1 === today.getMonth() && 
-                      day === today.getDate();
-      
-      if (isToday) {
-        dateTime.setHours(today.getHours(), today.getMinutes(), today.getSeconds(), today.getMilliseconds());
-      } else {
-        dateTime.setHours(0, 0, 0, 0);
-      }
-    } else {
-      dateTime = new Date();
-    }
+    const dateTime = this.dateUtils.buildDateTimeFromDateString(v.date);
     
     const payload: PurchaseDto = {
       supplierId: Number(v.supplierId),

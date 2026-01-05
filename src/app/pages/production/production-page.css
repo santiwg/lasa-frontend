@@ -1,0 +1,130 @@
+/* Production Page Layout (basado en purchases/payments) */
+.production-page {
+	margin-left: 1.5rem;
+	margin-right: 1.5rem;
+	margin-top: 2.5rem;
+}
+
+/* Bootstrap .table-responsive recorta dropdown menus por overflow.
+   Permitimos overflow vertical para que se vean los detalles/insumos. */
+.production-table-responsive {
+	overflow-x: auto;
+	overflow-y: auto;
+}
+
+/* En pantallas donde la tabla entra sin scroll horizontal, dejamos overflow visible
+   para que los dropdowns no sean recortados por el contenedor. */
+@media (min-width: 992px) {
+	.production-table-responsive {
+		overflow: visible;
+	}
+}
+
+.production-table {
+	width: 100%;
+	max-width: 1150px;
+	min-width: 850px;
+	background-color: var(--color-surface-background);
+	color: #111;
+	font-size: 0.85rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	padding: 12px 18px 12px 18px;
+	margin-top: 2px;
+}
+
+.production-table thead th {
+	background-color: var(--color-surface-background);
+	font-weight: 700;
+}
+
+.production-table tbody td,
+.production-table tbody th {
+	font-weight: 400;
+}
+
+.production-table th,
+.production-table td {
+	vertical-align: middle;
+	padding: 0.7rem 1.2rem;
+	font-size: 0.95rem;
+}
+
+.production-table th {
+	font-size: 0.85rem;
+	white-space: nowrap;
+}
+
+.col-id { width: 6%; }
+.col-date { width: 18%; }
+.col-produced { width: 24%; }
+.col-consumed { width: 32%; }
+.col-actions { width: 20%; }
+
+.btn-accent {
+	background-color: var(--color-accent-primary) !important;
+	border-color: var(--color-accent-primary) !important;
+	color: var(--color-accent-on-primary) !important;
+	border-radius: 999px;
+}
+
+.btn-accent:hover { filter: brightness(0.9); }
+
+.btn-danger {
+	background-color: #dc3545;
+	color: #fff;
+	border: none;
+	border-radius: 999px;
+}
+
+.production-table .dropdown-toggle { border: none; }
+.production-table .dropdown-toggle:focus { box-shadow: none; }
+
+.production-table .dropdown-menu {
+	background-color: var(--color-surface-background);
+	color: #111;
+	font-size: 0.85rem;
+	min-width: 360px;
+	border-radius: 12px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+	padding: 12px 18px 12px 18px;
+	margin-top: 2px;
+	z-index: 2000;
+}
+
+.dropdown-menu .dropdown-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 6px;
+	font-size: 0.97em;
+}
+
+.dropdown-menu .dropdown-row .property {
+	font-weight: 600;
+	color: #222;
+}
+
+.dropdown-menu .dropdown-row .value {
+	color: #222;
+	margin-left: 12px;
+}
+
+.supplier-pill {
+	background-color: rgba(0, 0, 0, 0.08);
+	color: #111;
+	border-radius: 999px;
+	padding: 0.25rem 0.9rem;
+	font-size: 0.85rem;
+}
+
+.supplier-pill:hover { filter: brightness(0.95); }
+
+.actions-pagination-row {
+	margin-top: 1.25rem;
+	margin-bottom: 1.5rem;
+	gap: 1rem;
+	max-width: 900px;
+	min-width: 700px;
+	width: 100%;
+}

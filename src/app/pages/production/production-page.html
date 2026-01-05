@@ -1,1 +1,133 @@
-<p>production works!</p>
+<!-- Production Page -->
+<div class="production-page mt-5">
+	<h2 class="fw-bold mb-3">Producción</h2>
+
+	<!-- Tabla de producciones -->
+	<div class="table-responsive production-table-responsive d-flex flex-column align-items-center position-relative">
+		<table class="table table-sm align-middle production-table">
+			<colgroup>
+				<col class="col-id" />
+				<col class="col-date" />
+				<col class="col-produced" />
+				<col class="col-consumed" />
+				<col class="col-actions" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col">ID</th>
+					<th scope="col">Fecha</th>
+					<th scope="col">Productos producidos</th>
+					<th scope="col">Insumos consumidos</th>
+					<th scope="col">Acciones</th>
+				</tr>
+			</thead>
+			<tbody>
+				@for (pi of productionInstances; track pi.id) {
+					<tr>
+						<th scope="row">{{ pi.id }}</th>
+						<td>{{ pi.dateTime | date:'dd/MM/yy - HH:mm':'UTC' }}</td>
+
+						<!-- Productos producidos -->
+						<td>
+							<div class="dropdown">
+								<button
+									class="btn supplier-pill dropdown-toggle w-100 d-flex align-items-center justify-content-center"
+									type="button"
+									data-bs-toggle="dropdown"
+									aria-expanded="false"
+									data-bs-auto-close="outside"
+								>
+									Ver productos
+								</button>
+								<ul class="dropdown-menu p-3">
+								@if (pi.details && pi.details.length > 0) {
+									@for (d of pi.details; track d.id) {
+										@if (d.product) {
+											<li class="dropdown-row">
+												<span class="property">{{ d.product.name }}</span>
+												<span class="value">x {{ d.quantity | number:'1.0-2' }}</span>
+											</li>
+										}
+									}
+								} @else {
+									<li class="dropdown-row">
+										<span class="property">Sin detalles</span>
+										<span class="value">-</span>
+									</li>
+								}
+								</ul>
+							</div>
+						</td>
+
+						<!-- Insumos consumidos -->
+						<td>
+							<div class="dropdown">
+								<button
+									class="btn supplier-pill dropdown-toggle w-100 d-flex align-items-center justify-content-center"
+									type="button"
+									data-bs-toggle="dropdown"
+									aria-expanded="false"
+									data-bs-auto-close="outside"
+								>
+									Ver insumos
+								</button>
+								<ul class="dropdown-menu p-3">
+								@let consumed = calculateConsumedIngredients(pi);
+								@if (consumed.length > 0) {
+									@for (c of consumed; track c.ingredient.id) {
+										<li class="dropdown-row">
+											<span class="property">{{ c.ingredient.name }}</span>
+											<span class="value">x {{ c.quantity | number:'1.0-2' }} {{ c.ingredient.unit.name }}</span>
+										</li>
+									}
+								} @else {
+									<li class="dropdown-row">
+										<span class="property">Sin insumos</span>
+										<span class="value">-</span>
+									</li>
+								}
+								</ul>
+							</div>
+						</td>
+
+						<td>
+							<div class="d-flex justify-content-center gap-2">
+								<button class="btn btn-sm btn-danger rounded-3" (click)="deleteProductionInstance(pi)">Borrar</button>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="actions-pagination-row d-flex align-items-center justify-content-between mt-3 gap-3 mx-auto" style="position: relative; min-height: 48px; max-width: 900px; min-width: 700px; width: 100%;">
+		<div>
+			<button class="btn btn-accent btn-sm" (click)="openProductionCreateModal()">+Registrar nueva instancia</button>
+		</div>
+		<app-pagination
+			[page]="page"
+			[hasNext]="hasNext"
+			(previous)="previousPage()"
+			(next)="nextPage()"
+			style="position: absolute; left: 50%; transform: translateX(-50%) translateY(-8px);"
+		></app-pagination>
+		<div class="d-flex gap-2">
+			<button class="btn btn-accent btn-sm" (click)="openProductSelectionModal()">Filtrar por producto</button>
+		</div>
+	</div>
+</div>
+
+@if (showProductionModal) {
+	<app-production-form (create)="onCreateProductionInstance($event)" (cancel)="showProductionModal = false"></app-production-form>
+}
+
+@if (showProductSelectionModal) {
+	<app-filter-selection-form
+		headerText="Filtrar por producto"
+		displayProp="name"
+		[fetchOptions]="fetchProductOptions"
+		(selected)="onApplyFilters('product', $event)"
+		(cancel)="showProductSelectionModal = false"
+	></app-filter-selection-form>
+}
